@@ -1,0 +1,11 @@
+# Signatures generees : chacun genere la sienne, avec ses coordonnees
+brand/signature/dist/
+
+# Fichiers de variables personnels (variables.json reste versionne comme modele)
+brand/signature/*.json
+!brand/signature/variables.json
+
+node_modules/
+.DS_Store
+.env
+.env.local
