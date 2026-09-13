@@ -82,9 +82,12 @@ const hauteurUtile = (hauteur, ratio) => {
 };
 
 /** Le logo s'il est fourni, sinon le nom du studio compose. */
-const marque = (v, { hauteur = 44, align = 'left', size = 12, track = 3, color = INK } = {}) =>
+const marque = (v, { hauteur = 44, align = 'left', size = 12, track = 3,
+                     color = INK, exact = false } = {}) =>
   v.LOGO_SRC
-    ? image(esc(v.LOGO_SRC), hauteurUtile(hauteur, v.LOGO_RATIO), v.LOGO_RATIO, align)
+    ? image(esc(v.LOGO_SRC),
+            exact ? hauteur : hauteurUtile(hauteur, v.LOGO_RATIO),
+            v.LOGO_RATIO, align)
     : wordmark({ size, track, color });
 
 /** Filet horizontal : une cellule de 1px, rendu fiable partout. */
@@ -100,24 +103,27 @@ const open = (extra = '') =>
 
 /**
  * A — Filet
- * Le nom en grand serif bas-de-casse, un filet court, les coordonnees
- * empilees. Le contraste d'echelle fait le travail.
+ * Logo a gauche sur toute la hauteur du bloc, filet vertical, texte a droite.
+ * La hauteur du logo est calee sur celle du texte : nom (24) + role (17) +
+ * filet et ses marges (25) + trois lignes de coordonnees (60). Si on touche a
+ * ces valeurs, il faut reprendre HAUTEUR_BLOC, sinon le logo depasse.
  */
+const HAUTEUR_BLOC = 126;
+
 function filet(v) {
   return `${open()}
-  ${v.LOGO_SRC ? `<tr><td style="padding:0 0 13px 0;">${marque(v, { hauteur: 46 })}</td></tr>` : ''}
   <tr>
-    <td style="padding:0 0 2px 0;font-family:${SERIF};font-size:20px;line-height:24px;color:${INK};letter-spacing:0.2px;">${esc(v.NOM_COMPLET)}</td>
-  </tr>
-  <tr>
-    <td style="padding:0 0 12px 0;font-size:10px;line-height:15px;color:${FAINT};letter-spacing:2.2px;text-transform:uppercase;">${esc(v.ROLE)} &nbsp;/&nbsp; Finck &amp; Fisch</td>
-  </tr>
-  <tr><td style="padding:0 0 12px 0;">${hairline(200)}</td></tr>
-  <tr>
-    <td style="font-size:12px;line-height:20px;color:${INK};">
-      ${mail(v, INK)}<br>
-      ${tel(v, INK)}<br>
-      ${site(v, INK)}
+    <td valign="middle" style="padding:0 24px 0 0;">${marque(v, { hauteur: HAUTEUR_BLOC, exact: true, size: 15, track: 3 })}</td>
+    <td width="1" bgcolor="${RULE}" style="width:1px;min-width:1px;line-height:1px;font-size:1px;">&nbsp;</td>
+    <td valign="middle" style="padding:0 0 0 24px;">
+      <div style="font-family:${SERIF};font-size:20px;line-height:24px;color:${INK};letter-spacing:0.2px;">${esc(v.NOM_COMPLET)}</div>
+      <div style="font-size:10px;line-height:15px;color:${FAINT};letter-spacing:2.2px;text-transform:uppercase;padding-top:2px;">${esc(v.ROLE)} &nbsp;/&nbsp; Finck &amp; Fisch</div>
+      <div style="padding:12px 0;">${hairline(200)}</div>
+      <div style="font-size:12px;line-height:20px;color:${INK};">
+        ${mail(v, INK)}<br>
+        ${tel(v, INK)}<br>
+        ${site(v, INK)}
+      </div>
     </td>
   </tr>
 </table>`;
@@ -305,7 +311,7 @@ export const VARIANTS = [
   {
     id: 'filet',
     nom: 'Filet',
-    note: 'Logo en tete, nom en grand serif, filet court. Le choix par defaut.',
+    note: 'Logo a gauche sur toute la hauteur, filet vertical, texte a droite. Le choix par defaut.',
     render: filet
   },
   {
