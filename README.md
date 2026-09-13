@@ -7,13 +7,14 @@ production. Les sites clients vivent dans leurs propres repos, un par client.
 
 ```
 brand/
-  signature/        Signature email (templates + generateur)
+  logo/             Logo : fichier master et exports derives
+  signature/        Signature email : gabarits, generateur, installation
 ```
 
 ## Marque
 
 - Nom : **Finck & Fisch**, baseline **Digital Studio**
-- Palette : noir `#111111`, blanc casse `#FAF9F7`, gris secondaire `#77716A`,
+- Palette : noir `#111111`, papier `#F5F4F0`, gris secondaire `#77716A`,
   filets `#DCD7D0`
 - Typographie : serif haut de gamme pour le nom et le monogramme, sans-serif
   neutre pour le texte courant

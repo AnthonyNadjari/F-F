@@ -3,7 +3,18 @@
 Signature HTML pour les mails clients. Trois variantes, un seul jeu de variables,
 un script qui genere les fichiers prets a coller.
 
-## Utilisation
+## Deux facons de generer
+
+- **Le generateur** (`generateur.html`) : on remplit les champs, on voit le
+  rendu dans une fausse fenetre de mail, on copie. C'est la voie a donner a
+  quelqu'un qui ne touche pas au code. Le fichier est aussi publie en ligne.
+- **Le script** (`build.mjs`) : pour generer les trois variantes d'un coup, ou
+  plusieurs signatures depuis plusieurs fichiers de variables.
+
+Les gabarits du generateur sont une copie de ceux de `templates/` : toute
+modification de l'un doit etre reportee dans l'autre.
+
+## Utilisation du script
 
 1. Ouvrir `variables.json` et remplacer les valeurs (elles sont preremplies avec
    des exemples : `prenom@finckfisch.fr`, `+33 6 00 00 00 00`, etc.).

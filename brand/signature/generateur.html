@@ -1,0 +1,634 @@
+<title>Signature Finck &amp; Fisch</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500&family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400&display=swap">
+<style>
+  :root {
+    --paper:      #F5F4F0;
+    --panel:      #FFFFFF;
+    --ink:        #12110F;
+    --ink-soft:   #6F6960;
+    --ink-faint:  #A39C93;
+    --rule:       #E3DED6;
+    --rule-firm:  #C7C0B6;
+    --ok:         #3E6B50;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper:     #131211;
+      --panel:     #1B1918;
+      --ink:       #F2F0EB;
+      --ink-soft:  #9A938A;
+      --ink-faint: #6B655D;
+      --rule:      #2C2825;
+      --rule-firm: #423C35;
+      --ok:        #82AC8E;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper:     #131211;
+    --panel:     #1B1918;
+    --ink:       #F2F0EB;
+    --ink-soft:  #9A938A;
+    --ink-faint: #6B655D;
+    --rule:      #2C2825;
+    --rule-firm: #423C35;
+    --ok:        #82AC8E;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Archivo", "Helvetica Neue", Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .shell {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding-inline: 24px;
+    padding-block: 40px 56px;
+  }
+
+  /* ---------- En-tete ---------- */
+
+  .masthead {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--rule-firm);
+  }
+  .mark {
+    font-family: "Bodoni Moda", Didot, Georgia, serif;
+    font-size: 30px;
+    line-height: 1;
+    letter-spacing: .01em;
+  }
+  .wordmark {
+    font-family: "Bodoni Moda", Didot, Georgia, serif;
+    font-size: 15px;
+    letter-spacing: .3em;
+    text-transform: uppercase;
+  }
+  .baseline {
+    font-size: 9.5px;
+    letter-spacing: .28em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-left: auto;
+  }
+
+  h1 {
+    font-family: "Bodoni Moda", Didot, Georgia, serif;
+    font-weight: 400;
+    font-size: clamp(28px, 5vw, 40px);
+    line-height: 1.1;
+    text-wrap: balance;
+    margin: 34px 0 10px;
+  }
+  .lede {
+    max-width: 60ch;
+    color: var(--ink-soft);
+    margin: 0 0 40px;
+  }
+
+  /* ---------- Grille ---------- */
+
+  .work {
+    display: grid;
+    grid-template-columns: minmax(0, 360px) minmax(0, 1fr);
+    gap: 56px;
+    align-items: start;
+  }
+  @media (max-width: 900px) {
+    .work { grid-template-columns: 1fr; gap: 40px; }
+  }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 24px;
+  }
+
+  /* ---------- Formulaire ---------- */
+
+  form { display: flex; flex-direction: column; gap: 22px; }
+
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .field input {
+    width: 100%;
+    border: 0;
+    border-bottom: 1px solid var(--rule-firm);
+    border-radius: 0;
+    background: transparent;
+    padding: 7px 0;
+    font-family: inherit;
+    font-size: 15px;
+    color: var(--ink);
+  }
+  .field input:hover { border-bottom-color: var(--ink-soft); }
+  .field input:focus { outline: none; border-bottom-color: var(--ink); }
+  .field input:focus-visible { outline: 1.5px solid var(--ink); outline-offset: 5px; }
+  .field .hint { font-size: 11.5px; color: var(--ink-faint); }
+
+  .field[hidden] { display: none; }
+
+  .reset {
+    align-self: flex-start;
+    background: none;
+    border: 0;
+    padding: 0;
+    margin-top: 2px;
+    font-family: inherit;
+    font-size: 11px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    border-bottom: 1px solid var(--rule-firm);
+    cursor: pointer;
+  }
+  .reset:hover { color: var(--ink); border-bottom-color: var(--ink); }
+
+  /* ---------- Variantes ---------- */
+
+  .variants {
+    display: flex;
+    gap: 26px;
+    flex-wrap: wrap;
+    margin-bottom: 26px;
+  }
+  .variant {
+    background: none;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    padding: 0 0 7px;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    cursor: pointer;
+  }
+  .variant:hover { color: var(--ink-soft); }
+  .variant[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--ink); }
+
+  /* ---------- Fausse fenetre de mail ----------
+     Volontairement fixee en clair, meme en theme sombre :
+     c'est ce que verra le destinataire. ------------------ */
+
+  .mail {
+    background: #FFFFFF;
+    color: #12110F;
+    border: 1px solid var(--rule-firm);
+    overflow: hidden;
+  }
+  .mail-bar {
+    padding: 11px 20px;
+    border-bottom: 1px solid #EAE5DE;
+    background: #F7F5F2;
+    color: #8A847B;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+  }
+  .mail-row {
+    display: flex;
+    gap: 14px;
+    padding: 9px 20px;
+    border-bottom: 1px solid #F0ECE6;
+    font-size: 13px;
+    color: #55504A;
+  }
+  .mail-row b {
+    flex: 0 0 52px;
+    font-weight: 400;
+    color: #A39C93;
+    font-size: 10px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    padding-top: 3px;
+  }
+  .mail-body { padding: 26px 20px 30px; overflow-x: auto; }
+  .mail-body p {
+    margin: 0 0 14px;
+    max-width: 58ch;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: #33302C;
+  }
+  .mail-body p.spaced { margin-bottom: 26px; }
+
+  /* ---------- Actions ---------- */
+
+  .actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 22px;
+  }
+  .btn {
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    padding: 13px 22px;
+    border: 1px solid var(--ink);
+    background: var(--ink);
+    color: var(--paper);
+    cursor: pointer;
+    transition: opacity .15s ease;
+  }
+  .btn:hover { opacity: .82; }
+  .btn.ghost { background: transparent; color: var(--ink); }
+  .btn.ghost:hover { background: var(--ink); color: var(--paper); opacity: 1; }
+  .btn:focus-visible { outline: 1.5px solid var(--ink); outline-offset: 3px; }
+  .btn[data-state="done"] { border-color: var(--ok); background: var(--ok); color: #FFFFFF; opacity: 1; }
+  .btn.ghost[data-state="done"] { background: transparent; color: var(--ok); }
+
+  .status {
+    min-height: 18px;
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+
+  /* ---------- Code source ---------- */
+
+  details { margin-top: 26px; border-top: 1px solid var(--rule); padding-top: 16px; }
+  summary {
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  summary:hover { color: var(--ink); }
+  summary:focus-visible { outline: 1.5px solid var(--ink); outline-offset: 4px; }
+  textarea {
+    width: 100%;
+    margin-top: 14px;
+    min-height: 190px;
+    resize: vertical;
+    background: var(--panel);
+    color: var(--ink-soft);
+    border: 1px solid var(--rule);
+    padding: 14px;
+    font-family: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+    font-size: 11.5px;
+    line-height: 1.65;
+    white-space: pre;
+  }
+  textarea:focus-visible { outline: 1.5px solid var(--ink); outline-offset: 2px; }
+
+  /* ---------- Notes ---------- */
+
+  .notes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 28px;
+    margin-top: 64px;
+    padding-top: 22px;
+    border-top: 1px solid var(--rule-firm);
+  }
+  .note h3 {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--ink);
+    margin: 0 0 8px;
+  }
+  .note p { margin: 0; font-size: 12.5px; line-height: 1.6; color: var(--ink-soft); }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+
+<div class="shell">
+
+  <div class="masthead">
+    <span class="mark">F&amp;F</span>
+    <span class="wordmark">Finck &amp; Fisch</span>
+    <span class="baseline">Digital Studio</span>
+  </div>
+
+  <h1>Générateur de signature</h1>
+  <p class="lede">
+    Remplis les champs, choisis la variante, copie le rendu dans ton client mail.
+    Les valeurs affichées sont des exemples&nbsp;: remplace-les par les vraies une fois
+    le domaine acheté.
+  </p>
+
+  <div class="work">
+
+    <section>
+      <div class="section-label">Coordonnées</div>
+      <form id="form" autocomplete="off">
+        <div class="field">
+          <label for="nom">Nom complet</label>
+          <input id="nom" name="NOM_COMPLET" type="text" value="Anthony Nadjari">
+        </div>
+        <div class="field">
+          <label for="role">Rôle</label>
+          <input id="role" name="ROLE" type="text" value="Fondateur">
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="EMAIL" type="email" value="anthony@finckfisch.fr">
+        </div>
+        <div class="field">
+          <label for="tel">Téléphone</label>
+          <input id="tel" name="TELEPHONE" type="tel" value="+33 6 00 00 00 00">
+          <span class="hint">Le lien cliquable est déduit automatiquement.</span>
+        </div>
+        <div class="field">
+          <label for="site">Site</label>
+          <input id="site" name="SITE" type="text" value="finckfisch.fr">
+          <span class="hint">Sans <code>https://</code>, il est ajouté au lien.</span>
+        </div>
+        <div class="field" id="logoField" hidden>
+          <label for="logo">URL du logo (PNG hébergé)</label>
+          <input id="logo" name="LOGO_URL" type="url" value="https://finckfisch.fr/brand/monogram@2x.png">
+          <span class="hint">PNG uniquement — Gmail supprime les SVG.</span>
+        </div>
+        <button type="button" class="reset" id="reset">Revenir aux exemples</button>
+      </form>
+    </section>
+
+    <section>
+      <div class="section-label">Aperçu chez le destinataire</div>
+
+      <div class="variants" role="tablist" aria-label="Variante de signature">
+        <button class="variant" role="tab" data-variant="standard" aria-selected="true">Standard</button>
+        <button class="variant" role="tab" data-variant="compacte" aria-selected="false">Compacte</button>
+        <button class="variant" role="tab" data-variant="logo" aria-selected="false">Avec logo</button>
+      </div>
+
+      <div class="mail">
+        <div class="mail-bar">Nouveau message</div>
+        <div class="mail-row"><b>À</b> <span>marie.duval@cabinet-duval.fr</span></div>
+        <div class="mail-row"><b>Objet</b> <span>Votre site — proposition</span></div>
+        <div class="mail-body">
+          <p>Bonjour Docteur Duval,</p>
+          <p class="spaced">Merci pour notre échange de ce matin. Vous trouverez en pièce jointe la proposition pour le site du cabinet, avec les deux directions dont nous avons parlé.</p>
+          <p class="spaced">Bien à vous,</p>
+          <div id="sigRender"></div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn" id="copyRich" type="button">Copier la signature</button>
+        <button class="btn ghost" id="copyText" type="button">Copier la version texte</button>
+      </div>
+      <p class="status" id="status" role="status" aria-live="polite"></p>
+
+      <details>
+        <summary>Voir le code HTML</summary>
+        <textarea id="source" readonly spellcheck="false"></textarea>
+        <div class="actions">
+          <button class="btn ghost" id="copyCode" type="button">Copier le code</button>
+        </div>
+      </details>
+    </section>
+
+  </div>
+
+  <div class="notes">
+    <div class="note">
+      <h3>Coller le rendu</h3>
+      <p>Dans Gmail ou Outlook, sélectionne la signature dans l'aperçu et copie&#8209;colle&#8209;la telle quelle. Le code HTML ne sert que si le client mail propose un champ « source ».</p>
+    </div>
+    <div class="note">
+      <h3>Polices système</h3>
+      <p>Georgia et Arial, pas de webfont&nbsp;: les polices chargées à distance ne s'affichent pas dans la plupart des clients mail et retomberaient sur une police imprévisible.</p>
+    </div>
+    <div class="note">
+      <h3>Variante « avec logo »</h3>
+      <p>À réserver au moment où le PNG sera hébergé en https à une URL stable. D'ici là, le monogramme en texte ne peut pas être bloqué ni cassé.</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const STORE = 'ff-signature-v1';
+
+  const DEFAULTS = {
+    NOM_COMPLET: 'Anthony Nadjari',
+    ROLE: 'Fondateur',
+    EMAIL: 'anthony@finckfisch.fr',
+    TELEPHONE: '+33 6 00 00 00 00',
+    SITE: 'finckfisch.fr',
+    LOGO_URL: 'https://finckfisch.fr/brand/monogram@2x.png'
+  };
+
+  const form = document.getElementById('form');
+  const inputs = [...form.querySelectorAll('input')];
+  const render = document.getElementById('sigRender');
+  const source = document.getElementById('source');
+  const status = document.getElementById('status');
+  const logoField = document.getElementById('logoField');
+
+  let variant = 'standard';
+
+  const esc = (s) => String(s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+  function values() {
+    const v = {};
+    inputs.forEach((i) => { v[i.name] = i.value.trim(); });
+    v.TEL_BRUT = v.TELEPHONE.replace(/[^\d+]/g, '');
+    const bare = v.SITE.replace(/^https?:\/\//i, '').replace(/\/+$/, '');
+    v.SITE = bare;
+    v.SITE_URL = 'https://' + bare;
+    return v;
+  }
+
+  /* Ces trois gabarits doivent rester identiques a brand/signature/templates/. */
+
+  function standard(v, logo) {
+    const badge = logo
+      ? `<img src="${esc(v.LOGO_URL)}" alt="Finck &amp; Fisch" width="56" height="56" style="display:block;width:56px;height:56px;border:0;outline:none;text-decoration:none;">`
+      : `<div style="font-family:Georgia,'Times New Roman',Times,serif;font-size:28px;line-height:30px;color:#111111;letter-spacing:0.5px;white-space:nowrap;">F&amp;F</div>`;
+
+    return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;">
+  <tr>
+    <td valign="top" style="padding:${logo ? '0' : '2px'} 18px 0 0;">${badge}</td>
+    <td width="1" bgcolor="#DCD7D0" style="width:1px;min-width:1px;line-height:1px;font-size:1px;">&nbsp;</td>
+    <td valign="top" style="padding:2px 0 0 18px;">
+      <div style="font-family:Georgia,'Times New Roman',Times,serif;font-size:15px;line-height:20px;color:#111111;letter-spacing:1.6px;text-transform:uppercase;">${esc(v.NOM_COMPLET)}</div>
+      <div style="font-size:12px;line-height:18px;color:#77716A;letter-spacing:0.4px;padding-top:3px;">${esc(v.ROLE)} &nbsp;&middot;&nbsp; Finck &amp; Fisch</div>
+      <div style="font-size:12px;line-height:19px;padding-top:11px;">
+        <a href="mailto:${esc(v.EMAIL)}" style="color:#111111;text-decoration:none;"><span style="color:#111111;text-decoration:none;">${esc(v.EMAIL)}</span></a><br>
+        <a href="tel:${esc(v.TEL_BRUT)}" style="color:#111111;text-decoration:none;"><span style="color:#111111;text-decoration:none;">${esc(v.TELEPHONE)}</span></a><br>
+        <a href="${esc(v.SITE_URL)}" style="color:#111111;text-decoration:none;"><span style="color:#111111;text-decoration:none;">${esc(v.SITE)}</span></a>
+      </div>
+      <div style="font-size:10px;line-height:14px;color:#A39C93;letter-spacing:2px;text-transform:uppercase;padding-top:12px;">Digital Studio</div>
+    </td>
+  </tr>
+</table>`;
+  }
+
+  function compacte(v) {
+    return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;">
+  <tr>
+    <td height="1" bgcolor="#DCD7D0" style="height:1px;line-height:1px;font-size:1px;width:280px;">&nbsp;</td>
+  </tr>
+  <tr>
+    <td style="padding:10px 0 0 0;">
+      <div style="font-family:Georgia,'Times New Roman',Times,serif;font-size:13px;line-height:18px;color:#111111;letter-spacing:1.4px;text-transform:uppercase;">${esc(v.NOM_COMPLET)} &nbsp;&middot;&nbsp; Finck &amp; Fisch</div>
+      <div style="font-size:11px;line-height:17px;color:#77716A;padding-top:4px;">
+        <a href="mailto:${esc(v.EMAIL)}" style="color:#77716A;text-decoration:none;"><span style="color:#77716A;text-decoration:none;">${esc(v.EMAIL)}</span></a>
+        &nbsp;&middot;&nbsp;
+        <a href="tel:${esc(v.TEL_BRUT)}" style="color:#77716A;text-decoration:none;"><span style="color:#77716A;text-decoration:none;">${esc(v.TELEPHONE)}</span></a>
+        &nbsp;&middot;&nbsp;
+        <a href="${esc(v.SITE_URL)}" style="color:#77716A;text-decoration:none;"><span style="color:#77716A;text-decoration:none;">${esc(v.SITE)}</span></a>
+      </div>
+    </td>
+  </tr>
+</table>`;
+  }
+
+  function plain(v) {
+    return `--\n${v.NOM_COMPLET} | ${v.ROLE}\nFinck & Fisch - Digital Studio\n${v.EMAIL} | ${v.TELEPHONE}\n${v.SITE}`;
+  }
+
+  function build() {
+    const v = values();
+    const html = variant === 'compacte' ? compacte(v) : standard(v, variant === 'logo');
+    render.innerHTML = html;
+    source.value = html;
+    save(v);
+  }
+
+  function save(v) {
+    try { localStorage.setItem(STORE, JSON.stringify(v)); } catch (e) { /* navigation privée */ }
+  }
+
+  function restore() {
+    let saved = null;
+    try { saved = JSON.parse(localStorage.getItem(STORE) || 'null'); } catch (e) { saved = null; }
+    if (!saved) return;
+    inputs.forEach((i) => { if (typeof saved[i.name] === 'string' && saved[i.name]) i.value = saved[i.name]; });
+  }
+
+  /* ---------- Copie ---------- */
+
+  function flash(button, message) {
+    status.textContent = message;
+    button.dataset.state = 'done';
+    const label = button.dataset.label || button.textContent;
+    button.dataset.label = label;
+    button.textContent = 'Copié';
+    setTimeout(() => {
+      button.textContent = label;
+      delete button.dataset.state;
+    }, 2200);
+  }
+
+  async function copyRich(button) {
+    const html = source.value;
+    const text = plain(values());
+    try {
+      if (navigator.clipboard && window.ClipboardItem) {
+        await navigator.clipboard.write([new ClipboardItem({
+          'text/html': new Blob([html], { type: 'text/html' }),
+          'text/plain': new Blob([text], { type: 'text/plain' })
+        })]);
+        flash(button, 'Signature copiée avec sa mise en forme. Colle-la dans le champ signature de ton client mail.');
+        return;
+      }
+    } catch (e) { /* on tente la selection ci-dessous */ }
+
+    try {
+      const range = document.createRange();
+      range.selectNodeContents(render);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      if (document.execCommand('copy')) {
+        sel.removeAllRanges();
+        flash(button, 'Signature copiée avec sa mise en forme. Colle-la dans le champ signature de ton client mail.');
+        return;
+      }
+      sel.removeAllRanges();
+    } catch (e) { /* rien a faire de plus */ }
+
+    status.textContent = 'Ce navigateur bloque la copie automatique : sélectionne la signature dans l\'aperçu et fais Cmd/Ctrl+C.';
+  }
+
+  async function copyPlainText(button, text, message) {
+    try {
+      await navigator.clipboard.writeText(text);
+      flash(button, message);
+      return;
+    } catch (e) { /* repli sur un champ temporaire */ }
+
+    const scratch = document.createElement('textarea');
+    scratch.value = text;
+    scratch.style.cssText = 'position:fixed;top:-2000px;left:0;opacity:0;';
+    document.body.appendChild(scratch);
+    scratch.select();
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+    scratch.remove();
+    status.textContent = ok ? message : 'Copie automatique bloquée : sélectionne le texte et fais Cmd/Ctrl+C.';
+    if (ok) flash(button, message);
+  }
+
+  /* ---------- Evenements ---------- */
+
+  form.addEventListener('input', build);
+
+  document.getElementById('reset').addEventListener('click', () => {
+    inputs.forEach((i) => { i.value = DEFAULTS[i.name] || ''; });
+    build();
+    status.textContent = 'Champs remis aux valeurs d\'exemple.';
+  });
+
+  document.querySelectorAll('.variant').forEach((tab) => {
+    tab.addEventListener('click', () => {
+      variant = tab.dataset.variant;
+      document.querySelectorAll('.variant').forEach((t) => {
+        t.setAttribute('aria-selected', String(t === tab));
+      });
+      logoField.hidden = variant !== 'logo';
+      build();
+    });
+  });
+
+  document.getElementById('copyRich').addEventListener('click', (e) => copyRich(e.currentTarget));
+
+  document.getElementById('copyText').addEventListener('click', (e) =>
+    copyPlainText(e.currentTarget, plain(values()), 'Version texte copiée — c\'est celle à mettre sur iPhone.'));
+
+  document.getElementById('copyCode').addEventListener('click', (e) =>
+    copyPlainText(e.currentTarget, source.value, 'Code HTML copié.'));
+
+  restore();
+  build();
+</script>
