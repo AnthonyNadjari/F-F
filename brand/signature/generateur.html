@@ -243,7 +243,7 @@
     <div class="logo-texte">
       <input id="logoFichier" type="file" accept="image/png,image/jpeg,image/webp" class="visuellement-cache">
       <label class="lien" for="logoFichier" id="logoLabel">Choisir le logo</label>
-      <button type="button" class="lien" id="logoRetirer" hidden>Retirer</button>
+      <button type="button" class="lien" id="logoRetirer" hidden>Revenir au logo du studio</button>
       <p class="hint" id="logoHint">PNG à fond transparent. Le fichier reste dans ton navigateur&nbsp;: en collant la signature, Gmail héberge l'image lui-même — ni domaine ni hébergement nécessaires.</p>
     </div>
   </div>
@@ -259,6 +259,7 @@
 
 <script type="module">
   import { VARIANTS, plain, normalise } from './variants.mjs';
+  import { MONOGRAMME } from './logo-embed.mjs';
 
   const STORE = 'ff-signature-v2';
   const STORE_LOGO = 'ff-logo-v1';
@@ -322,7 +323,7 @@
         try { localStorage.setItem(STORE_LOGO, JSON.stringify(logo)); } catch (e) { /* trop lourd ou navigation privee */ }
         appliquerLogo();
         construire();
-        dire('Logo chargé — il apparaît dans six des compositions.');
+        dire('Logo remplacé — il apparaît dans les six compositions qui en portent un.');
       };
       im.src = reader.result;
     };
@@ -339,13 +340,17 @@
       logoApercu.hidden = false;
       logoLabel.textContent = 'Changer le logo';
       logoRetirer.hidden = false;
-      logoHint.textContent = "En collant la signature dans Gmail, l'image part avec et Gmail l'héberge lui-même — ni domaine ni hébergement nécessaires.";
+      logoHint.textContent = "Logo remplacé pour cet écran seulement. « Revenir au logo du studio » rétablit celui du repo.";
     } else {
-      logoApercu.hidden = true;
       logoApercu.innerHTML = '';
-      logoLabel.textContent = 'Choisir le logo';
+      const studio = new Image();
+      studio.src = MONOGRAMME.src;
+      studio.alt = 'Monogramme Finck & Fisch';
+      logoApercu.append(studio);
+      logoApercu.hidden = false;
+      logoLabel.textContent = 'Remplacer le logo';
       logoRetirer.hidden = true;
-      logoHint.textContent = "PNG à fond transparent. Le fichier reste dans ton navigateur — rien n'est envoyé nulle part.";
+      logoHint.textContent = "Le monogramme du studio, vectorisé depuis le logo d'origine. Il part avec le copier-coller : Gmail l'héberge lui-même, ni domaine ni hébergement nécessaires.";
     }
   }
 
@@ -442,10 +447,6 @@
     const normalisees = normalise(v);
 
     cartes.forEach(({ variante, feuille }) => {
-      if (variante.besoinLogo && !v.LOGO_DATA) {
-        feuille.innerHTML = '<p class="manque">Charge le logo ci-dessus pour voir cette version.</p>';
-        return;
-      }
       feuille.innerHTML = variante.render(normalisees);
     });
 
@@ -482,7 +483,7 @@
     try { localStorage.removeItem(STORE_LOGO); } catch (e) { /* rien a nettoyer */ }
     appliquerLogo();
     construire();
-    dire('Logo retiré.');
+    dire('Logo du studio rétabli.');
   });
 
   document.getElementById('reset').addEventListener('click', () => {

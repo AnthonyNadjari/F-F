@@ -12,6 +12,8 @@
  * <span> interieur sinon iOS repasse les liens en bleu.
  */
 
+import { MONOGRAMME } from './logo-embed.mjs';
+
 const SERIF = "Georgia,'Times New Roman',Times,serif";
 const SANS = 'Arial,Helvetica,sans-serif';
 
@@ -36,9 +38,14 @@ export function normalise(raw) {
   const bare = (v.SITE || '').trim().replace(/^https?:\/\//i, '').replace(/\/+$/, '');
   v.SITE = bare;
   v.SITE_URL = bare ? 'https://' + bare : '';
-  // Le fichier charge dans le navigateur prime sur l'URL hebergee.
-  v.LOGO_SRC = v.LOGO_DATA || v.LOGO_URL || '';
-  v.LOGO_RATIO = Number(v.LOGO_RATIO) > 0 ? Number(v.LOGO_RATIO) : 1;
+  // Un fichier charge dans le navigateur prime sur une URL hebergee, qui prime
+  // sur le monogramme du studio embarque. Le ratio suit la source retenue :
+  // celui du monogramme est connu, celui d'un fichier tiers est mesure ailleurs.
+  const fourni = v.LOGO_DATA || v.LOGO_URL;
+  v.LOGO_SRC = fourni || MONOGRAMME.src;
+  v.LOGO_RATIO = fourni
+    ? (Number(v.LOGO_RATIO) > 0 ? Number(v.LOGO_RATIO) : 1)
+    : MONOGRAMME.ratio;
   return v;
 }
 
@@ -268,7 +275,7 @@ function compacte(v) {
 function logo(v) {
   return `${open('text-align:center;')}
   <tr>
-    <td align="center" style="padding:0 0 12px 0;">${marque(v, { hauteur: 78, align: 'center' })}</td>
+    <td align="center" style="padding:0 0 12px 0;">${marque(v, { hauteur: 62, align: 'center' })}</td>
   </tr>
   <tr><td align="center" style="padding:0 0 12px 0;">${hairline(34, RULE, 'center')}</td></tr>
   <tr>
@@ -341,8 +348,7 @@ export const VARIANTS = [
     id: 'logo',
     nom: 'Logo centre',
     note: 'Le logo en grand, seul en tete. La plus proche d\'une carte de visite.',
-    render: logo,
-    besoinLogo: true
+    render: logo
   }
 ];
 

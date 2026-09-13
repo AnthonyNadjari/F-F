@@ -8,12 +8,12 @@ contrastes d'echelle, pas la couleur.
 |---|---|---|
 | A | **Filet** | Nom en grand serif, filet court, coordonnees empilees. Le choix par defaut. |
 | B | **Colonnes** | Identite a gauche, coordonnees a droite. Compact en hauteur. |
-| C | **Bandeau** | Nom du studio en reserve sur noir. La plus affirmee : premiers contacts, propositions. |
+| C | **Bandeau** | Nom du studio en reserve sur noir. Sans logo : il faudrait l'export blanc. |
 | D | **Centree** | Symetrique et sobre, pour les mails courts. |
 | E | **Bornes** | Bloc tenu entre deux filets. Tient bon quand le client mail ecrase les marges. |
 | F | **Fiche** | Coordonnees etiquetees E / T / W, quand il y a beaucoup a donner. |
 | G | **Compacte** | Deux lignes, a regler comme signature de **reponse**. |
-| H | **Logo** | Le vrai logo en tete. Necessite le PNG heberge en https. |
+| H | **Logo centre** | Le monogramme en grand, seul en tete. La plus proche d'une carte de visite. |
 
 Plus une version texte brut, la seule que garde iOS.
 
@@ -37,6 +37,22 @@ Pour ajouter une composition : une fonction qui recoit les valeurs et renvoie du
 HTML, puis une entree dans `VARIANTS`. Elle apparait automatiquement dans le
 generateur et dans `dist/`.
 
+## Le logo
+
+Quatre compositions (filet, colonnes, fiche, logo centre) portent le
+monogramme du studio. Il est **embarque en base64** dans `logo-embed.mjs`,
+genere par `brand/logo/vectorise.py` : l'image part avec le copier-coller et
+Gmail la reheberge au collage, donc elle s'affiche sans domaine ni
+hebergement.
+
+Les quatre autres sont typographiques : le bandeau parce qu'un logo noir
+disparaitrait sur du noir (il faudrait l'export blanc), les autres pour laisser
+un vrai choix entre une signature avec marque et une signature sans.
+
+Pour pointer vers un logo heberge plutot que l'embarque, renseigner `LOGO_URL`
+dans `variables.json`. Dans le generateur, « Remplacer le logo » charge un
+fichier local, qui ne quitte pas le navigateur.
+
 ## Champs
 
 | Cle | Exemple | Note |
@@ -46,7 +62,7 @@ generateur et dans `dist/`.
 | `EMAIL` | `anthony@finckfisch.fr` | |
 | `TELEPHONE` | `+33 6 00 00 00 00` | Le lien `tel:` est deduit automatiquement |
 | `SITE` | `finckfisch.fr` | Sans `https://`, il est ajoute au lien |
-| `LOGO_URL` | `https://finckfisch.fr/brand/monogram@2x.png` | Composition H uniquement |
+| `LOGO_URL` | vide | Vide = monogramme embarque. Une URL https pour un logo heberge |
 
 ## Installation
 

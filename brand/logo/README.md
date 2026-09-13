@@ -1,48 +1,53 @@
 # Logo — Finck & Fisch
 
-Le logo est l'actif le plus durable du studio : il vit ici, versionne ici, et
-c'est d'ici que partent tous les exports (site, signature, factures, contrats).
-
 ```
-source/     Fichier master, celui dont tout le reste est derive
-export/     Derives prets a l'emploi, jamais retouches a la main
+source/f_and_f_logo.png   Le fichier d'origine. Ne jamais l'ecraser.
+source/logo-master.svg    Vectorisation du fichier d'origine
+export/                   Derives, tous regeneres : ne rien y retoucher a la main
+vectorise.py              Ce qui produit tout ce qui precede
 ```
 
-## A deposer dans `source/`
+## Regenerer
 
-Le fichier d'origine, tel quel, sans recadrage ni compression :
+```bash
+pip install pillow && apt-get install potrace
+python3 brand/logo/vectorise.py
+```
 
-- `logo-master.svg` si un vectoriel existe — c'est le format a privilegier,
-  il se re-exporte a n'importe quelle taille sans perte ;
-- sinon `logo-master.png`, a la plus grande resolution disponible.
+Le fichier d'origine est un PNG carre sur fond creme, sans transparence. Le
+script en tire tout le reste :
 
-Ne jamais ecraser ce fichier. Une nouvelle version du logo = un nouveau
-fichier (`logo-master-v2.svg`), pour garder l'historique lisible.
+1. **Detourage** — la couche alpha est calculee a partir de la luminosite, entre
+   la valeur dominante des bords (le fond) et la plus sombre (l'encre). Un
+   simple seuil crenellerait les courbes du Didone ; l'interpolation garde
+   l'anticrenelage. Les valeurs sous 16/255 sont ramenees a zero : le fichier
+   d'origine a un grain leger qui, sans ce plancher, compte comme de l'encre et
+   fait echouer tous les recadrages.
+2. **Decoupe** — le verrouillage est separe en trois bandes (monogramme, nom,
+   baseline) en cherchant les lignes vides, pas avec des coordonnees en dur :
+   si le logo d'origine change, le script suit.
+3. **Tracage** — potrace, sur une version agrandie x2 et binarisee. L'image est
+   inversee avant : en PBM, c'est le noir qui est de l'encre, l'inverse de la
+   couche alpha. Sans cela potrace trace le fond.
+4. **Sorties** — les SVG, les PNG a fond transparent, et le monogramme en
+   base64 pour les signatures email (`brand/signature/logo-embed.mjs`).
 
-## A generer dans `export/`
+## Ce que contient export/
 
-| Fichier | Contenu | Usage |
-|---|---|---|
-| `logo-full.png` | Monogramme + FINCK & FISCH + DIGITAL STUDIO | Documents, presentations |
-| `logo-horizontal.png` | Monogramme a gauche, nom a droite | En-tete de site, factures |
-| `monogram.png` | `F&F` seul | Signature email, avatar, tampon |
-| `monogram@2x.png` | `F&F` seul, 120 x 120 | Variante « avec logo » de la signature |
-| `favicon-32.png`, `favicon-512.png` | Monogramme seul, cadrage serre | Onglet navigateur, PWA |
-| `apple-touch-icon.png` | Monogramme seul, 180 x 180 | Ecran d'accueil iOS |
+| Fichier | Usage |
+|---|---|
+| `monogram.svg` · `monogram-blanc.svg` | Monogramme seul, fonds clairs et sombres |
+| `logo-horizontal.svg` · `-blanc.svg` | Monogramme a gauche, nom a droite : en-tetes, factures |
+| `logo-complet-blanc.svg` | Verrouillage complet sur fond sombre |
+| `monogram@2x.png` · `monogram.png` | Signature email, avatars — Gmail supprime les SVG |
+| `monogram-blanc@2x.png` | Le meme sur fond sombre |
+| `logo-complet@2x.png` · `-blanc@2x.png` | Documents, presentations |
+| `favicon-512.png` · `favicon-32.png` | Onglet navigateur, PWA |
+| `apple-touch-icon.png` | Ecran d'accueil iOS |
 
-Chaque export existe en deux versions : noir sur transparent (`-noir`) et blanc
-sur transparent (`-blanc`), pour les fonds clairs et les fonds sombres.
-
-## Regles d'export
-
-- **Fond transparent**, jamais de blanc « en dur » : un fond blanc se voit des
-  que le logo est pose sur autre chose que du blanc.
-- **PNG pour les usages mail**, SVG partout ailleurs. Gmail supprime les SVG
-  (voir `brand/signature/README.md`).
-- **Exporter en x2** puis afficher a la moitie de la taille, sinon le logo est
-  flou sur les ecrans Retina.
-- **Garder les fichiers legers** (< 1 Mo). Git versionne mal les gros binaires :
-  chaque modification stocke une copie complete.
+Les PNG sont a fond transparent et exportes en x2 : un fond blanc en dur se
+voit des que le logo est pose ailleurs que sur du blanc, et sans le x2 il est
+flou sur les ecrans Retina.
 
 ## Couleurs de la marque
 
