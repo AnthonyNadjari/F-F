@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Finck &amp; Fisch — Digital Studio</title>
+<meta name="description" content="Des sites sur mesure pour les professions libérales. Livrés en trois jours, à partir de 350 €.">
+<link rel="icon" href="favicon-512.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta property="og:title" content="Finck &amp; Fisch — Digital Studio">
+<meta property="og:description" content="Des sites sur mesure pour les professions libérales. Livrés en trois jours, à partir de 350 €.">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Archivo:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --paper:     #F5F4F0;
+    --panel:     #FFFFFF;
+    --ink:       #12110F;
+    --ink-soft:  #56514A;
+    --ink-faint: #948D84;
+    --rule:      #DFD9D1;
+    --rule-firm: #C2BAB0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #131211; --panel: #1B1918; --ink: #F2F0EB;
+      --ink-soft: #A8A199; --ink-faint: #6B655D;
+      --rule: #2C2825; --rule-firm: #443E37;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #131211; --panel: #1B1918; --ink: #F2F0EB;
+    --ink-soft: #A8A199; --ink-faint: #6B655D;
+    --rule: #2C2825; --rule-firm: #443E37;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Archivo", "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page { max-width: 1080px; margin: 0 auto; padding-inline: 24px; }
+
+  a { color: var(--ink); }
+  a:focus-visible, button:focus-visible { outline: 1.5px solid var(--ink); outline-offset: 4px; }
+
+  .etiquette {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  /* ---------- en-tete ---------- */
+
+  .barre {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-block: 26px 0;
+  }
+  .barre .marque {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    text-decoration: none;
+  }
+  .barre svg { display: block; width: 38px; height: auto; color: var(--ink); }
+  .barre .nom {
+    font-family: "Bodoni Moda", Didot, Georgia, serif;
+    font-size: 14px;
+    letter-spacing: .26em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .barre .nom i { font-style: italic; }
+  .barre .droite { margin-left: auto; }
+
+  /* ---------- ouverture ---------- */
+
+  .ouverture { padding-block: clamp(56px, 11vw, 112px) clamp(48px, 8vw, 84px); }
+
+  h1 {
+    font-family: "Bodoni Moda", Didot, Georgia, serif;
+    font-weight: 400;
+    font-size: clamp(38px, 7.4vw, 76px);
+    line-height: 1.04;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+    margin: 22px 0 0;
+    max-width: 15ch;
+  }
+  .accroche {
+    margin: 26px 0 0;
+    max-width: 52ch;
+    font-size: clamp(17px, 2.1vw, 20px);
+    line-height: 1.55;
+    color: var(--ink-soft);
+    text-wrap: pretty;
+  }
+  .appel { display: flex; gap: 26px; align-items: baseline; flex-wrap: wrap; margin-top: 38px; }
+  .bouton {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    padding: 16px 30px;
+    background: var(--ink);
+    color: var(--paper);
+    text-decoration: none;
+    transition: opacity .15s ease;
+  }
+  .bouton:hover { opacity: .84; }
+  .appel .sous { font-size: 13.5px; color: var(--ink-faint); }
+
+  /* ---------- les trois chiffres ---------- */
+
+  .chiffres {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-top: 1px solid var(--rule-firm);
+    border-bottom: 1px solid var(--rule-firm);
+  }
+  .chiffre { padding: 30px 0 32px; }
+  .chiffre + .chiffre { border-left: 1px solid var(--rule); padding-left: 32px; }
+  .chiffre b {
+    display: block;
+    font-family: "Bodoni Moda", Didot, Georgia, serif;
+    font-weight: 400;
+    font-size: clamp(30px, 4.6vw, 44px);
+    line-height: 1;
+    letter-spacing: -0.01em;
+  }
+  .chiffre span { display: block; margin-top: 11px; }
+  @media (max-width: 620px) {
+    .chiffres { grid-template-columns: 1fr; }
+    .chiffre + .chiffre { border-left: 0; border-top: 1px solid var(--rule); padding-left: 0; }
+  }
+
+  /* ---------- sections ---------- */
+
+  section { padding-block: clamp(54px, 9vw, 92px); }
+  section + section { border-top: 1px solid var(--rule); }
+
+  h2 {
+    font-family: "Bodoni Moda", Didot, Georgia, serif;
+    font-weight: 400;
+    font-size: clamp(26px, 4vw, 38px);
+    line-height: 1.15;
+    letter-spacing: -0.005em;
+    text-wrap: balance;
+    margin: 14px 0 0;
+    max-width: 19ch;
+  }
+  .intro {
+    margin: 20px 0 0;
+    max-width: 58ch;
+    color: var(--ink-soft);
+    text-wrap: pretty;
+  }
+
+  .deux {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr);
+    gap: 26px 56px;
+    align-items: start;
+  }
+  @media (max-width: 780px) { .deux { grid-template-columns: 1fr; gap: 26px; } }
+
+  /* ---------- listes ---------- */
+
+  .liste { list-style: none; margin: 0; padding: 0; }
+  .liste li { padding-block: 17px; border-top: 1px solid var(--rule); text-wrap: pretty; }
+  .liste li:first-child { border-top: 0; padding-top: 0; }
+  .liste b { font-weight: 600; }
+  .liste p { margin: 5px 0 0; color: var(--ink-soft); font-size: 15px; }
+
+  /* Les numeros disent l'ordre reel des etapes : ils portent une information. */
+  .etapes { list-style: none; margin: 34px 0 0; padding: 0; counter-reset: etape; }
+  .etapes li {
+    display: grid;
+    grid-template-columns: 52px minmax(0, 1fr);
+    gap: 0 20px;
+    padding-block: 24px;
+    border-top: 1px solid var(--rule);
+    counter-increment: etape;
+  }
+  .etapes li::before {
+    content: counter(etape, decimal-leading-zero);
+    font-family: "Bodoni Moda", Didot, Georgia, serif;
+    font-size: 19px;
+    line-height: 1.35;
+    color: var(--ink-faint);
+  }
+  .etapes b { font-weight: 600; }
+  .etapes p { margin: 5px 0 0; color: var(--ink-soft); font-size: 15px; max-width: 58ch; }
+  @media (max-width: 540px) {
+    .etapes li { grid-template-columns: 1fr; gap: 6px; }
+  }
+
+  .refus { margin: 30px 0 0; max-width: 58ch; }
+  .refus li {
+    padding-block: 13px;
+    border-top: 1px solid var(--rule);
+    color: var(--ink-soft);
+    list-style: none;
+  }
+  .refus { padding: 0; }
+
+  .metiers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 0;
+    margin: 26px 0 0;
+    padding: 0;
+    list-style: none;
+    font-family: "Bodoni Moda", Didot, Georgia, serif;
+    font-size: clamp(17px, 2.4vw, 22px);
+    line-height: 1.35;
+  }
+  .metiers li:not(:last-child)::after {
+    content: "·";
+    color: var(--ink-faint);
+    padding: 0 16px;
+  }
+
+  /* ---------- contact ---------- */
+
+  .contact { text-align: left; }
+  .adresse {
+    display: inline-block;
+    margin: 24px 0 0;
+    font-family: "Bodoni Moda", Didot, Georgia, serif;
+    font-size: clamp(24px, 4.4vw, 40px);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    border-bottom: 1px solid var(--rule-firm);
+    padding-bottom: 4px;
+    word-break: break-word;
+  }
+  .adresse:hover { border-bottom-color: var(--ink); }
+
+  /* ---------- pied ---------- */
+
+  footer {
+    border-top: 1px solid var(--rule-firm);
+    padding-block: 30px 44px;
+    display: flex;
+    gap: 14px 28px;
+    flex-wrap: wrap;
+    align-items: center;
+    font-size: 12.5px;
+    color: var(--ink-faint);
+  }
+  footer svg { display: block; width: 22px; height: auto; color: var(--ink-faint); }
+  footer .fin { margin-left: auto; }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="barre">
+    <a class="marque" href="#">
+      <!--MONOGRAMME-->
+      <span class="nom">Finck <i>&amp;</i> Fisch</span>
+    </a>
+    <span class="etiquette droite">Digital Studio</span>
+  </div>
+
+  <div class="ouverture">
+    <p class="etiquette">Sites pour professions libérales</p>
+    <h1>Le site que votre cabinet aurait déjà dû avoir.</h1>
+    <p class="accroche">
+      Nous concevons des sites sur mesure pour les cabinets qui reçoivent mieux
+      qu'ils ne se présentent. Un entretien, trois jours, un site en ligne à
+      votre nom.
+    </p>
+    <div class="appel">
+      <a class="bouton" href="mailto:bonjour@finckfisch.fr?subject=Projet%20de%20site">Écrire au studio</a>
+      <span class="sous">Réponse sous 24 heures, jours ouvrés.</span>
+    </div>
+  </div>
+
+  <div class="chiffres">
+    <div class="chiffre">
+      <b>350 €</b>
+      <span class="etiquette">À partir de</span>
+    </div>
+    <div class="chiffre">
+      <b>3 jours</b>
+      <span class="etiquette">Première version</span>
+    </div>
+    <div class="chiffre">
+      <b>2 séries</b>
+      <span class="etiquette">De corrections incluses</span>
+    </div>
+  </div>
+
+  <section>
+    <div class="deux">
+      <div>
+        <p class="etiquette">La prestation</p>
+        <h2>Ce que vous recevez</h2>
+      </div>
+      <ul class="liste">
+        <li>
+          <b>Un site dessiné pour vous</b>
+          <p>Pas un thème repeint. La mise en page, les couleurs et la
+             typographie sortent de ce que vous nous dites de votre pratique.</p>
+        </li>
+        <li>
+          <b>Ce qu'on vient chercher, au premier écran</b>
+          <p>L'adresse, les horaires, le téléphone, la prise de rendez-vous.
+             Un visiteur ne doit jamais avoir à chercher.</p>
+        </li>
+        <li>
+          <b>Les mentions légales et la confidentialité</b>
+          <p>Rédigées et intégrées, pas laissées en chantier.</p>
+        </li>
+        <li>
+          <b>Un site qui s'affiche instantanément</b>
+          <p>Sur téléphone comme sur ordinateur. La moitié de vos visiteurs
+             arrivent depuis une recherche faite dans la rue.</p>
+        </li>
+        <li>
+          <b>Vous en êtes propriétaire</b>
+          <p>Le nom de domaine est acheté à votre nom. Le code vous appartient,
+             et vous repartez avec si vous changez de prestataire.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <p class="etiquette">La méthode</p>
+    <h2>Quatre étapes, et rien entre les deux</h2>
+    <ol class="etapes">
+      <li>
+        <div>
+          <b>Un appel de vingt minutes</b>
+          <p>On note votre pratique, ce qui vous distingue d'un confrère à trois
+             rues, et ce que votre Ordre vous autorise à publier.</p>
+        </div>
+      </li>
+      <li>
+        <div>
+          <b>Un devis ferme</b>
+          <p>Un prix, un délai, un périmètre écrit. Rien ne commence avant votre
+             accord et l'acompte.</p>
+        </div>
+      </li>
+      <li>
+        <div>
+          <b>Une première version sous trois jours</b>
+          <p>Le délai court à partir du moment où vous nous avez envoyé vos
+             textes et vos photos. C'est la seule chose que nous vous demandons.</p>
+        </div>
+      </li>
+      <li>
+        <div>
+          <b>Deux séries de corrections, puis la mise en ligne</b>
+          <p>Sur votre nom de domaine. Nous nous occupons de la configuration
+             technique.</p>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <section>
+    <div class="deux">
+      <div>
+        <p class="etiquette">Professions réglementées</p>
+        <h2>Nous connaissons vos contraintes</h2>
+      </div>
+      <div>
+        <p class="intro">
+          Un chirurgien-dentiste ne publie pas de témoignages de patients. Un
+          avocat ne communique pas comme un commerçant. Depuis 2020, les
+          professionnels de santé peuvent informer le public sur leur activité,
+          à condition que cette information reste loyale et honnête, sans
+          caractère comparatif ni promotionnel.
+        </p>
+        <p class="intro">
+          Nous construisons vos pages avec ces règles en tête, et nous vous le
+          disons quand une idée vous exposerait. La validation finale reste la
+          vôtre — c'est votre Ordre, pas le nôtre.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="deux">
+      <div>
+        <p class="etiquette">Le périmètre</p>
+        <h2>Ce que nous ne faisons pas</h2>
+      </div>
+      <ul class="refus">
+        <li>Du référencement payant, des campagnes, des réseaux sociaux.</li>
+        <li>Des promesses de première place dans Google.</li>
+        <li>Des boutiques en ligne, des applications, des intranets.</li>
+        <li>Des sites à deux mille euros livrés en trois mois.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <p class="etiquette">Pour qui</p>
+    <ul class="metiers">
+      <li>Chirurgiens-dentistes</li>
+      <li>Médecins</li>
+      <li>Avocats</li>
+      <li>Notaires</li>
+      <li>Ostéopathes</li>
+      <li>Kinésithérapeutes</li>
+      <li>Psychologues</li>
+    </ul>
+  </section>
+
+  <section class="contact">
+    <p class="etiquette">Contact</p>
+    <h2>Dites-nous votre profession et votre ville</h2>
+    <p class="intro">
+      Nous répondons sous 24 heures avec une première idée de ce que nous ferions,
+      et le prix. Sans rendez-vous commercial ni relance.
+    </p>
+    <a class="adresse" href="mailto:bonjour@finckfisch.fr?subject=Projet%20de%20site">bonjour@finckfisch.fr</a>
+  </section>
+
+  <footer>
+    <!--MONOGRAMME-->
+    <span>Finck &amp; Fisch — Digital Studio</span>
+    <span class="fin">Sites conçus et développés à la main, en France.</span>
+  </footer>
+
+</div>
+
+</body>
+</html>
