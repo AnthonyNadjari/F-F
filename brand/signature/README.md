@@ -38,9 +38,9 @@ Le monogramme est **embarque en base64** dans `logo-embed.mjs`, genere par
 `brand/logo/vectorise.py` : l'image part avec le copier-coller et Gmail la
 reheberge au collage, donc elle s'affiche sans domaine ni hebergement.
 
-Sa hauteur est calee en dur sur celle du bloc texte (`HAUTEUR_BLOC`, 132 px) :
-nom, role, filet et ses marges, trois lignes de coordonnees. Toucher a une de
-ces tailles impose de reprendre ce nombre.
+Il fait 96 px de haut (`HAUTEUR_LOGO`) et se centre sur le bloc texte : cale
+sur toute la hauteur, il ecrasait le nom. C'est le filet vertical qui prend
+toute la hauteur, en s'etirant de lui-meme comme toute cellule de tableau.
 
 ## Choix typographiques
 

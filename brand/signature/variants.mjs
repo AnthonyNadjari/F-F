@@ -77,16 +77,17 @@ const hairline = (width) =>
 /* ---------- la signature ---------- */
 
 /**
- * Hauteur du bloc texte, donc du logo : nom (24) + role (17) + filet et ses
- * marges (25) + trois lignes de coordonnees a 22 (66). Si on touche a une de
- * ces valeurs, il faut reprendre ce nombre, sinon le logo depasse du bloc.
+ * Le logo est plus bas que le bloc texte et centre dessus : cale sur toute la
+ * hauteur il ecrasait le nom. C'est le filet vertical, lui, qui prend toute la
+ * hauteur de la ligne — les cellules d'un tableau s'etirent d'elles-memes.
+ * Cette hauteur est donc independante des tailles de police du bloc texte.
  */
-const HAUTEUR_BLOC = 132;
+const HAUTEUR_LOGO = 96;
 
 function signature(v) {
   return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;font-family:${SANS};">
   <tr>
-    <td valign="middle" style="padding:0 24px 0 0;">${logo(v, HAUTEUR_BLOC)}</td>
+    <td valign="middle" style="padding:0 24px 0 0;">${logo(v, HAUTEUR_LOGO)}</td>
     <td width="1" bgcolor="${RULE}" style="width:1px;min-width:1px;line-height:1px;font-size:1px;">&nbsp;</td>
     <td valign="middle" style="padding:0 0 0 24px;">
       <div style="font-family:${SERIF};font-size:20px;line-height:24px;color:${INK};letter-spacing:0.2px;">${esc(v.NOM_COMPLET)}</div>
