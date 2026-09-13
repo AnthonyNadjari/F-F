@@ -7,8 +7,13 @@ production. Les sites clients vivent dans leurs propres repos, un par client.
 
 ```
 brand/
-  logo/             Logo : fichier master et exports derives
-  signature/        Signature email : gabarits, generateur, installation
+  logo/             Logo : fichier d'origine, vectorisation, exports
+  signature/        Signature email : generateur et installation
+commercial/
+  brief-client.html Le formulaire rempli pendant l'appel de cadrage
+  devis-type.md     Modele de devis
+  contrat-prestation.md   Contrat et cession de droits
+  tarifs.md         Formules, options, comment chiffrer
 ```
 
 ## Marque

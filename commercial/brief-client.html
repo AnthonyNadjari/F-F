@@ -1,0 +1,617 @@
+<title>Brief client Finck &amp; Fisch</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&family=Archivo:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --paper:     #F5F4F0;
+    --panel:     #FFFFFF;
+    --ink:       #12110F;
+    --ink-soft:  #6F6960;
+    --ink-faint: #A39C93;
+    --rule:      #E3DED6;
+    --rule-firm: #C7C0B6;
+    --ok:        #3E6B50;
+    --alerte:    #8A5A2B;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #131211; --panel: #1B1918; --ink: #F2F0EB;
+      --ink-soft: #9A938A; --ink-faint: #6B655D;
+      --rule: #2C2825; --rule-firm: #423C35;
+      --ok: #82AC8E; --alerte: #C79A64;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #131211; --panel: #1B1918; --ink: #F2F0EB;
+    --ink-soft: #9A938A; --ink-faint: #6B655D;
+    --rule: #2C2825; --rule-firm: #423C35;
+    --ok: #82AC8E; --alerte: #C79A64;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Archivo", "Helvetica Neue", Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .shell {
+    max-width: 880px;
+    margin: 0 auto;
+    padding-inline: 20px;
+    padding-block: 28px 60px;
+  }
+
+  header {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    flex-wrap: wrap;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--rule-firm);
+  }
+  .wordmark {
+    font-family: "Bodoni Moda", Didot, Georgia, serif;
+    font-size: 14px;
+    letter-spacing: .28em;
+    text-transform: uppercase;
+  }
+  .wordmark i { font-style: italic; }
+  header p { margin: 0; font-size: 12px; color: var(--ink-faint); }
+
+  h1 {
+    font-family: "Bodoni Moda", Didot, Georgia, serif;
+    font-weight: 400;
+    font-size: clamp(26px, 5vw, 34px);
+    line-height: 1.15;
+    text-wrap: balance;
+    margin: 30px 0 10px;
+  }
+  .lede { max-width: 62ch; color: var(--ink-soft); margin: 0 0 8px; }
+
+  /* ---------- sections ---------- */
+
+  section { margin-top: 40px; }
+  .titre {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    padding-bottom: 9px;
+    border-bottom: 1px solid var(--rule-firm);
+    margin-bottom: 22px;
+  }
+  .titre h2 {
+    margin: 0;
+    font-family: "Bodoni Moda", Didot, Georgia, serif;
+    font-weight: 400;
+    font-size: 19px;
+    line-height: 1;
+  }
+  .titre span {
+    font-size: 10px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .titre em {
+    margin-left: auto;
+    font-style: normal;
+    font-size: 11.5px;
+    color: var(--ink-faint);
+    text-align: right;
+  }
+
+  .champs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 20px 26px;
+  }
+  .field { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+  .field.large { grid-column: 1 / -1; }
+  .field label {
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .field .aide { font-size: 11.5px; line-height: 1.45; color: var(--ink-faint); }
+
+  input[type="text"], input[type="email"], input[type="tel"], input[type="url"], textarea, select {
+    width: 100%;
+    border: 0;
+    border-bottom: 1px solid var(--rule-firm);
+    border-radius: 0;
+    background: transparent;
+    padding: 6px 0;
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--ink);
+  }
+  select { padding-right: 18px; }
+  textarea {
+    border: 1px solid var(--rule-firm);
+    padding: 10px 12px;
+    min-height: 84px;
+    resize: vertical;
+    line-height: 1.55;
+  }
+  input:hover, textarea:hover, select:hover { border-color: var(--ink-soft); }
+  input:focus, textarea:focus, select:focus { outline: none; border-color: var(--ink); }
+  input:focus-visible, textarea:focus-visible, select:focus-visible {
+    outline: 1.5px solid var(--ink); outline-offset: 4px;
+  }
+
+  .cases { display: flex; flex-wrap: wrap; gap: 8px 18px; padding-top: 2px; }
+  .cases label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+    letter-spacing: 0;
+    text-transform: none;
+    font-weight: 400;
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .cases input { accent-color: var(--ink); width: 14px; height: 14px; }
+
+  /* ---------- encart deontologie ---------- */
+
+  .encart {
+    border-left: 2px solid var(--alerte);
+    padding: 2px 0 2px 16px;
+    margin-bottom: 22px;
+  }
+  .encart p { margin: 0; font-size: 12.5px; line-height: 1.55; color: var(--ink-soft); max-width: 66ch; }
+  .encart strong { color: var(--ink); font-weight: 600; }
+
+  /* ---------- sortie ---------- */
+
+  .sortie { margin-top: 48px; padding-top: 22px; border-top: 1px solid var(--rule-firm); }
+  .actions { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
+  .btn {
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    padding: 13px 22px;
+    border: 1px solid var(--ink);
+    background: var(--ink);
+    color: var(--paper);
+    cursor: pointer;
+  }
+  .btn.ghost { background: transparent; color: var(--ink); }
+  .btn.ghost:hover { background: var(--ink); color: var(--paper); }
+  .btn:hover { opacity: .85; }
+  .btn:focus-visible { outline: 1.5px solid var(--ink); outline-offset: 3px; }
+  #status { font-size: 12px; color: var(--ok); margin: 0; }
+
+  #resume {
+    width: 100%;
+    min-height: 260px;
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    padding: 16px;
+    font-family: Menlo, Consolas, monospace;
+    font-size: 11.5px;
+    line-height: 1.65;
+    color: var(--ink-soft);
+    white-space: pre-wrap;
+    resize: vertical;
+  }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="shell">
+
+  <header>
+    <span class="wordmark">Finck <i>&amp;</i> Fisch</span>
+    <p>Brief client</p>
+  </header>
+
+  <h1>Ce qu'il faut savoir avant de commencer</h1>
+  <p class="lede">
+    À remplir pendant l'appel, pas à envoyer au client&nbsp;: un formulaire de
+    trente questions se remplit mal tout seul, et les réponses les plus utiles
+    arrivent en discutant. Le résumé en bas se copie tel quel dans le dossier du
+    projet.
+  </p>
+
+  <form id="brief" autocomplete="off">
+
+    <section>
+      <div class="titre"><span>01</span><h2>Le cabinet</h2></div>
+      <div class="champs">
+        <div class="field">
+          <label for="cabinet">Nom du cabinet</label>
+          <input id="cabinet" type="text" placeholder="Cabinet dentaire Duval">
+        </div>
+        <div class="field">
+          <label for="profession">Profession</label>
+          <input id="profession" type="text" placeholder="Chirurgien-dentiste">
+        </div>
+        <div class="field">
+          <label for="adresse">Adresse</label>
+          <input id="adresse" type="text" placeholder="12 rue de la Paix, 75002 Paris">
+        </div>
+        <div class="field">
+          <label for="tel">Téléphone</label>
+          <input id="tel" type="tel" placeholder="01 42 00 00 00">
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" type="email" placeholder="contact@cabinet-duval.fr">
+        </div>
+        <div class="field">
+          <label for="siret">SIRET</label>
+          <input id="siret" type="text" placeholder="Pour le devis et les mentions légales">
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="titre"><span>02</span><h2>Les praticiens</h2></div>
+      <div class="champs">
+        <div class="field large">
+          <label for="praticiens">Qui exerce, et avec quel titre</label>
+          <textarea id="praticiens" placeholder="Dr Marie Duval — chirurgien-dentiste, diplômée de Paris V, 2008&#10;Dr Paul Meunier — orthodontiste, spécialiste qualifié en ODF"></textarea>
+          <span class="aide">Titre exact tel qu'il figure à l'Ordre. Un titre approximatif sur un site est un motif de rappel à l'ordre.</span>
+        </div>
+        <div class="field large">
+          <label for="parcours">Parcours à mettre en avant</label>
+          <textarea id="parcours" placeholder="Diplômes, hôpitaux, années d'exercice, enseignement…"></textarea>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="titre"><span>03</span><h2>L'activité</h2></div>
+      <div class="champs">
+        <div class="field large">
+          <label for="specialites">Spécialités et actes proposés</label>
+          <textarea id="specialites" placeholder="Une par ligne : implantologie, parodontie, esthétique dentaire…"></textarea>
+        </div>
+        <div class="field large">
+          <label for="distinction">Ce qui distingue le cabinet</label>
+          <textarea id="distinction" placeholder="Équipement, approche, prise en charge, langues, horaires élargis…"></textarea>
+          <span class="aide">La question à creuser pendant l'appel. C'est ce qui empêchera le site de ressembler à tous les autres.</span>
+        </div>
+        <div class="field large">
+          <label for="patientele">Patientèle visée</label>
+          <input id="patientele" type="text" placeholder="Familles du quartier, enfants, urgences, patients anxieux…">
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="titre"><span>04</span><h2>Pratique</h2><em>Ce que les visiteurs viennent chercher en premier</em></div>
+      <div class="champs">
+        <div class="field large">
+          <label for="horaires">Horaires</label>
+          <textarea id="horaires" placeholder="Lundi au vendredi : 9h – 19h&#10;Samedi : 9h – 12h&#10;Fermé le dimanche"></textarea>
+        </div>
+        <div class="field">
+          <label for="rdv">Prise de rendez-vous</label>
+          <input id="rdv" type="text" placeholder="Doctolib, téléphone, les deux…">
+        </div>
+        <div class="field">
+          <label for="rdvlien">Lien de prise de rendez-vous</label>
+          <input id="rdvlien" type="url" placeholder="https://www.doctolib.fr/…">
+        </div>
+        <div class="field">
+          <label for="acces">Accès</label>
+          <input id="acces" type="text" placeholder="Métro, parking, code d'entrée, étage">
+        </div>
+        <div class="field">
+          <label for="paiement">Moyens de paiement</label>
+          <input id="paiement" type="text" placeholder="CB, chèque, espèces, tiers payant">
+        </div>
+        <div class="field">
+          <label for="convention">Conventionnement et tarifs</label>
+          <input id="convention" type="text" placeholder="Secteur 1, secteur 2, dépassements">
+        </div>
+        <div class="field">
+          <label for="langues">Langues parlées</label>
+          <input id="langues" type="text" placeholder="Français, anglais, arabe…">
+        </div>
+        <div class="field large">
+          <label>Le cabinet est accessible</label>
+          <div class="cases">
+            <label><input type="checkbox" id="pmr"> aux personnes à mobilité réduite</label>
+            <label><input type="checkbox" id="ascenseur"> par ascenseur</label>
+            <label><input type="checkbox" id="urgences"> pour les urgences</label>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="titre"><span>05</span><h2>Déontologie</h2><em>La section qui évite les ennuis</em></div>
+      <div class="encart">
+        <p>
+          Les professions réglementées ont des règles de communication propres à
+          leur Ordre. Depuis 2020, médecins et chirurgiens-dentistes peuvent
+          informer le public sur leur activité, mais cette information doit
+          rester <strong>loyale et honnête</strong>&nbsp;: pas de caractère
+          comparatif, pas de témoignages de patients, pas de tarifs présentés
+          comme un argument commercial. Les avocats ont leurs propres règles.
+          <strong>C'est au client de valider ce qu'il a le droit de publier</strong>
+          — le contrat le prévoit — mais la question se pose maintenant, pas à la
+          livraison.
+        </p>
+      </div>
+      <div class="champs">
+        <div class="field">
+          <label for="ordre">Ordre ou organisation professionnelle</label>
+          <input id="ordre" type="text" placeholder="Conseil départemental de l'Ordre des chirurgiens-dentistes de Paris">
+        </div>
+        <div class="field">
+          <label for="numero">Numéro d'inscription</label>
+          <input id="numero" type="text" placeholder="RPPS, numéro d'ordre, barreau">
+        </div>
+        <div class="field large">
+          <label for="contraintes">Contraintes de communication connues</label>
+          <textarea id="contraintes" placeholder="Ce que le client sait ne pas pouvoir publier. S'il ne sait pas, le noter : c'est à lui de se renseigner auprès de son conseil départemental avant validation."></textarea>
+        </div>
+        <div class="field large">
+          <label>Le client confirme</label>
+          <div class="cases">
+            <label><input type="checkbox" id="valide_ordre"> qu'il fera valider les contenus s'il y a un doute</label>
+            <label><input type="checkbox" id="pas_avis"> qu'il ne souhaite pas d'avis patients sur le site</label>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="titre"><span>06</span><h2>Contenus</h2><em>Le premier facteur de retard</em></div>
+      <div class="champs">
+        <div class="field">
+          <label for="textes">Qui rédige les textes</label>
+          <select id="textes">
+            <option value="">—</option>
+            <option>Le client, textes déjà prêts</option>
+            <option>Le client, textes à écrire</option>
+            <option>Nous (option facturée)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="photos">Photos</label>
+          <select id="photos">
+            <option value="">—</option>
+            <option>Le client en a de bonnes</option>
+            <option>Le client en a, mais à retoucher</option>
+            <option>Aucune — banque d'images</option>
+            <option>Séance photo à prévoir</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="logo">Logo</label>
+          <select id="logo">
+            <option value="">—</option>
+            <option>Existe, fichier vectoriel disponible</option>
+            <option>Existe, seulement en image</option>
+            <option>Aucun</option>
+          </select>
+        </div>
+        <div class="field large">
+          <label for="delaicontenu">Date à laquelle le client fournit tout</label>
+          <input id="delaicontenu" type="text" placeholder="Une date, pas « dès que possible ». Le délai de livraison court à partir de là.">
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="titre"><span>07</span><h2>Direction</h2></div>
+      <div class="champs">
+        <div class="field large">
+          <label for="aime">Sites qu'il trouve réussis</label>
+          <textarea id="aime" placeholder="Deux ou trois adresses, et ce qui lui plaît dans chacune. Peu importe le secteur."></textarea>
+        </div>
+        <div class="field large">
+          <label for="deteste">Ce qu'il ne veut surtout pas</label>
+          <textarea id="deteste" placeholder="Souvent plus instructif que ce qu'il aime."></textarea>
+        </div>
+        <div class="field">
+          <label for="ton">Ton recherché</label>
+          <input id="ton" type="text" placeholder="Rassurant, clinique, chaleureux, haut de gamme…">
+        </div>
+        <div class="field">
+          <label for="couleurs">Couleurs imposées ou proscrites</label>
+          <input id="couleurs" type="text" placeholder="Charte existante, couleur détestée…">
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="titre"><span>08</span><h2>Technique et projet</h2></div>
+      <div class="champs">
+        <div class="field">
+          <label for="domaine">Nom de domaine</label>
+          <input id="domaine" type="text" placeholder="Déjà acheté ? Chez qui ? Sinon, à acheter à son nom.">
+        </div>
+        <div class="field">
+          <label for="existant">Site existant</label>
+          <input id="existant" type="url" placeholder="URL de l'ancien site, s'il y en a un">
+        </div>
+        <div class="field">
+          <label for="emailpro">Email professionnel</label>
+          <input id="emailpro" type="text" placeholder="Lié au domaine ? À conserver ?">
+        </div>
+        <div class="field">
+          <label for="echeance">Échéance souhaitée</label>
+          <input id="echeance" type="text" placeholder="Et pourquoi : ouverture, association, départ d'un confrère…">
+        </div>
+        <div class="field">
+          <label for="formule">Formule retenue</label>
+          <select id="formule">
+            <option value="">—</option>
+            <option>Essentiel — 350 €</option>
+            <option>Cabinet — 500 €</option>
+            <option>À chiffrer</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="interlocuteur">Interlocuteur unique</label>
+          <input id="interlocuteur" type="text" placeholder="Qui valide, et son téléphone direct">
+        </div>
+        <div class="field large">
+          <label for="notes">Notes d'appel</label>
+          <textarea id="notes" placeholder="Tout ce qui ne rentre pas ailleurs : le contexte, l'humeur, ce qui l'inquiète, ce qui l'a décidé."></textarea>
+        </div>
+      </div>
+    </section>
+
+  </form>
+
+  <div class="sortie">
+    <div class="actions">
+      <button type="button" class="btn" id="copier">Copier le brief</button>
+      <button type="button" class="btn ghost" id="vider">Vider le formulaire</button>
+      <p id="status" role="status" aria-live="polite"></p>
+    </div>
+    <textarea id="resume" readonly spellcheck="false"></textarea>
+  </div>
+
+</div>
+
+<script>
+  const STORE = 'ff-brief-v1';
+
+  /* Chaque section du resume : titre, puis les champs a reprendre. Les champs
+     vides sont omis — un brief a trous se lit mieux qu'un brief plein de tirets. */
+  const PLAN = [
+    ['Le cabinet', [
+      ['cabinet', 'Nom'], ['profession', 'Profession'], ['adresse', 'Adresse'],
+      ['tel', 'Téléphone'], ['email', 'Email'], ['siret', 'SIRET']
+    ]],
+    ['Les praticiens', [['praticiens', 'Praticiens'], ['parcours', 'Parcours']]],
+    ['Activité', [
+      ['specialites', 'Spécialités'], ['distinction', 'Ce qui distingue'],
+      ['patientele', 'Patientèle']
+    ]],
+    ['Pratique', [
+      ['horaires', 'Horaires'], ['rdv', 'Prise de rendez-vous'], ['rdvlien', 'Lien RDV'],
+      ['acces', 'Accès'], ['paiement', 'Paiement'], ['convention', 'Conventionnement'],
+      ['langues', 'Langues'],
+      ['pmr', 'Accessible PMR'], ['ascenseur', 'Ascenseur'], ['urgences', 'Urgences']
+    ]],
+    ['Déontologie', [
+      ['ordre', 'Ordre'], ['numero', 'Numéro'], ['contraintes', 'Contraintes connues'],
+      ['valide_ordre', 'Fera valider les contenus'], ['pas_avis', 'Pas d\'avis patients']
+    ]],
+    ['Contenus', [
+      ['textes', 'Textes'], ['photos', 'Photos'], ['logo', 'Logo'],
+      ['delaicontenu', 'Contenus fournis le']
+    ]],
+    ['Direction', [
+      ['aime', 'Aime'], ['deteste', 'Ne veut pas'], ['ton', 'Ton'], ['couleurs', 'Couleurs']
+    ]],
+    ['Technique et projet', [
+      ['domaine', 'Domaine'], ['existant', 'Site existant'], ['emailpro', 'Email pro'],
+      ['echeance', 'Échéance'], ['formule', 'Formule'], ['interlocuteur', 'Interlocuteur'],
+      ['notes', 'Notes d\'appel']
+    ]]
+  ];
+
+  const form = document.getElementById('brief');
+  const resume = document.getElementById('resume');
+  const status = document.getElementById('status');
+  const champs = [...form.querySelectorAll('input, textarea, select')];
+
+  let minuteur;
+  function dire(message) {
+    status.textContent = message;
+    clearTimeout(minuteur);
+    minuteur = setTimeout(() => { status.textContent = ''; }, 3500);
+  }
+
+  const valeur = (el) => (el.type === 'checkbox' ? (el.checked ? 'oui' : '') : el.value.trim());
+
+  function composer() {
+    const aujourdhui = new Date().toLocaleDateString('fr-FR');
+    const nom = document.getElementById('cabinet').value.trim() || '[cabinet]';
+    const lignes = [`BRIEF — ${nom}`, `Rempli le ${aujourdhui}`];
+
+    for (const [titre, entrees] of PLAN) {
+      const remplies = entrees
+        .map(([id, etiquette]) => [etiquette, valeur(document.getElementById(id))])
+        .filter(([, v]) => v);
+      if (!remplies.length) continue;
+
+      lignes.push('', titre.toUpperCase(), '-'.repeat(titre.length));
+      for (const [etiquette, v] of remplies) {
+        // Un texte multiligne est indente sous son etiquette plutot que colle
+        // derriere, sinon le resume devient illisible des qu'il y a trois lignes.
+        lignes.push(v.includes('\n')
+          ? `${etiquette} :\n${v.split('\n').map((l) => '    ' + l).join('\n')}`
+          : `${etiquette} : ${v}`);
+      }
+    }
+
+    const manquants = ['cabinet', 'profession', 'delaicontenu', 'interlocuteur']
+      .filter((id) => !valeur(document.getElementById(id)));
+    if (manquants.length) {
+      lignes.push('', 'À COMPLÉTER', '-'.repeat(11),
+        'Champs essentiels encore vides : ' + manquants.join(', '));
+    }
+
+    return lignes.join('\n');
+  }
+
+  function rafraichir() {
+    resume.value = composer();
+    try {
+      const etat = {};
+      champs.forEach((el) => { etat[el.id] = el.type === 'checkbox' ? el.checked : el.value; });
+      localStorage.setItem(STORE, JSON.stringify(etat));
+    } catch (e) { /* navigation privée */ }
+  }
+
+  function restaurer() {
+    let etat = null;
+    try { etat = JSON.parse(localStorage.getItem(STORE) || 'null'); } catch (e) { etat = null; }
+    if (!etat) return;
+    champs.forEach((el) => {
+      if (!(el.id in etat)) return;
+      if (el.type === 'checkbox') el.checked = !!etat[el.id];
+      else el.value = etat[el.id];
+    });
+  }
+
+  async function copier() {
+    const texte = resume.value;
+    try {
+      await navigator.clipboard.writeText(texte);
+      dire('Brief copié.');
+      return;
+    } catch (e) { /* repli sur la selection */ }
+
+    resume.removeAttribute('readonly');
+    resume.select();
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+    resume.setAttribute('readonly', '');
+    dire(ok ? 'Brief copié.' : 'Copie bloquée : sélectionne le texte et fais Cmd/Ctrl+C.');
+  }
+
+  form.addEventListener('input', rafraichir);
+  form.addEventListener('change', rafraichir);
+  document.getElementById('copier').addEventListener('click', copier);
+  document.getElementById('vider').addEventListener('click', () => {
+    if (!confirm('Vider tous les champs ? Le brief en cours sera perdu.')) return;
+    champs.forEach((el) => { if (el.type === 'checkbox') el.checked = false; else el.value = ''; });
+    rafraichir();
+    dire('Formulaire vidé.');
+  });
+
+  restaurer();
+  rafraichir();
+</script>
