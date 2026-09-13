@@ -55,4 +55,40 @@ ${rendus
 
 writeFileSync(join(DIST, 'apercu.html'), apercu, 'utf8');
 console.log('  ok  dist/apercu.html');
+
+/*
+ * Generateur autonome : le meme page, mais avec variants.mjs et logo-embed.mjs
+ * aplatis dedans. C'est cette version-la qu'on publie et qu'on ouvre en
+ * double-cliquant : un seul fichier, aucun import, donc rien qui puisse echouer
+ * au chargement des modules.
+ */
+const aplatir = (source) =>
+  source
+    .split('\n')
+    .filter((l) => !/^\s*import\s.+from\s+['"]\.\//.test(l))
+    .map((l) => l.replace(/^export\s+(const|function|class|let)\s/, '$1 '))
+    .join('\n');
+
+const page = readFileSync(join(ROOT, 'generateur.html'), 'utf8');
+const balise = page.match(/<script type="module">([\s\S]*?)<\/script>/);
+if (!balise) {
+  throw new Error('Balise <script type="module"> introuvable dans generateur.html');
+}
+
+const modules = ['logo-embed.mjs', 'variants.mjs']
+  .map((f) => aplatir(readFileSync(join(ROOT, f), 'utf8')))
+  .join('\n');
+
+const autonome = page.replace(
+  balise[0],
+  () => `<script>\n${modules}\n${aplatir(balise[1])}\n</script>`
+);
+
+const script = autonome.match(/<script>([\s\S]*?)<\/script>/)[1];
+if (/^\s*(import|export)\s/m.test(script)) {
+  throw new Error('Un import ou un export a survecu a l aplatissement');
+}
+
+writeFileSync(join(DIST, 'generateur.html'), autonome, 'utf8');
+console.log(`  ok  dist/generateur.html  (autonome, ${Math.round(autonome.length / 1024)} Ko)`);
 console.log('\nTermine. Ouvre brand/signature/dist/apercu.html, puis copie le rendu.');

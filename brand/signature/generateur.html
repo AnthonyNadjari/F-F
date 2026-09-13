@@ -281,7 +281,7 @@
   const logoRetirer = document.getElementById('logoRetirer');
   const logoHint = document.getElementById('logoHint');
 
-  let logo = null; // { src, ratio }
+  let logoPerso = null; // { src, ratio }
   const grille = document.getElementById('grille');
   const status = document.getElementById('status');
 
@@ -295,12 +295,12 @@
   function valeurs() {
     const v = {};
     inputs.forEach((i) => { v[i.name] = i.value.trim(); });
-    v.LOGO_DATA = logo ? logo.src : '';
-    v.LOGO_RATIO = logo ? logo.ratio : 1;
+    v.LOGO_DATA = logoPerso ? logoPerso.src : '';
+    v.LOGO_RATIO = logoPerso ? logoPerso.ratio : 1;
     return v;
   }
 
-  /* ---------- logo ---------- */
+  /* ---------- logoPerso ---------- */
 
   /**
    * Redimensionne le fichier a 480px sur son plus grand cote avant de le
@@ -319,8 +319,8 @@
         canvas.width = Math.max(1, Math.round(im.naturalWidth * echelle));
         canvas.height = Math.max(1, Math.round(im.naturalHeight * echelle));
         canvas.getContext('2d').drawImage(im, 0, 0, canvas.width, canvas.height);
-        logo = { src: canvas.toDataURL('image/png'), ratio: im.naturalWidth / im.naturalHeight };
-        try { localStorage.setItem(STORE_LOGO, JSON.stringify(logo)); } catch (e) { /* trop lourd ou navigation privee */ }
+        logoPerso = { src: canvas.toDataURL('image/png'), ratio: im.naturalWidth / im.naturalHeight };
+        try { localStorage.setItem(STORE_LOGO, JSON.stringify(logoPerso)); } catch (e) { /* trop lourd ou navigation privee */ }
         appliquerLogo();
         construire();
         dire('Logo remplacé — il apparaît dans les six compositions qui en portent un.');
@@ -331,10 +331,10 @@
   }
 
   function appliquerLogo() {
-    if (logo) {
+    if (logoPerso) {
       logoApercu.innerHTML = '';
       const vignette = new Image();
-      vignette.src = logo.src;
+      vignette.src = logoPerso.src;
       vignette.alt = 'Logo chargé';
       logoApercu.append(vignette);
       logoApercu.hidden = false;
@@ -458,8 +458,8 @@
   function restaurer() {
     try {
       const brut = JSON.parse(localStorage.getItem(STORE_LOGO) || 'null');
-      if (brut && typeof brut.src === 'string') logo = brut;
-    } catch (e) { logo = null; }
+      if (brut && typeof brut.src === 'string') logoPerso = brut;
+    } catch (e) { logoPerso = null; }
     appliquerLogo();
 
     let saved = null;
@@ -479,7 +479,7 @@
   });
 
   logoRetirer.addEventListener('click', () => {
-    logo = null;
+    logoPerso = null;
     try { localStorage.removeItem(STORE_LOGO); } catch (e) { /* rien a nettoyer */ }
     appliquerLogo();
     construire();
