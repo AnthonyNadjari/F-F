@@ -1,15 +1,12 @@
 {
   "_commentaire": "Remplace les valeurs ci-dessous puis lance : node brand/signature/build.mjs",
-
   "NOM_COMPLET": "Prenom Nom",
   "ROLE": "Fondateur",
-
   "EMAIL": "prenom@finckfisch.fr",
   "TELEPHONE": "+33 6 00 00 00 00",
   "TEL_BRUT": "+33600000000",
-
   "SITE": "finckfisch.fr",
   "SITE_URL": "https://finckfisch.fr",
-
-  "LOGO_URL": "https://finckfisch.fr/brand/monogram@2x.png"
+  "LOGO_URL": "https://finckfisch.fr/brand/monogram@2x.png",
+  "LOGO_RATIO": 1
 }

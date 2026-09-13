@@ -96,6 +96,42 @@
   .field input:focus { outline: none; border-bottom-color: var(--ink); }
   .field input:focus-visible { outline: 1.5px solid var(--ink); outline-offset: 5px; }
 
+  .logo-zone {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+    padding: 16px 0 0;
+    margin-bottom: 4px;
+    border-top: 1px solid var(--rule);
+  }
+  .logo-apercu {
+    flex: 0 0 auto;
+    background: #FFFFFF;
+    border: 1px solid var(--rule-firm);
+    padding: 8px;
+    line-height: 0;
+  }
+  .logo-apercu img { display: block; height: 46px; width: auto; }
+  .logo-texte { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; min-width: 0; }
+  .logo-texte .hint {
+    flex: 1 1 340px;
+    margin: 0;
+    font-size: 11.5px;
+    line-height: 1.45;
+    color: var(--ink-faint);
+  }
+  label.lien { display: inline-block; }
+  .visuellement-cache {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0);
+    white-space: nowrap; border: 0;
+  }
+  .visuellement-cache:focus-visible + label.lien,
+  label.lien:focus-visible { outline: 1.5px solid var(--ink); outline-offset: 4px; }
+
   .barre {
     display: flex;
     align-items: center;
@@ -200,11 +236,17 @@
       <label for="site">Site</label>
       <input id="site" name="SITE" type="text" value="finckfisch.fr">
     </div>
-    <div class="field">
-      <label for="logo">URL du logo (PNG)</label>
-      <input id="logo" name="LOGO_URL" type="url" value="">
-    </div>
   </form>
+
+  <div class="logo-zone" id="logoZone">
+    <div class="logo-apercu" id="logoApercu" hidden></div>
+    <div class="logo-texte">
+      <input id="logoFichier" type="file" accept="image/png,image/jpeg,image/webp" class="visuellement-cache">
+      <label class="lien" for="logoFichier" id="logoLabel">Choisir le logo</label>
+      <button type="button" class="lien" id="logoRetirer" hidden>Retirer</button>
+      <p class="hint" id="logoHint">PNG à fond transparent. Le fichier reste dans ton navigateur&nbsp;: en collant la signature, Gmail héberge l'image lui-même — ni domaine ni hébergement nécessaires.</p>
+    </div>
+  </div>
 
   <div class="barre">
     <button type="button" class="lien" id="reset">Revenir aux exemples</button>
@@ -219,6 +261,8 @@
   import { VARIANTS, plain, normalise } from './variants.mjs';
 
   const STORE = 'ff-signature-v2';
+  const STORE_LOGO = 'ff-logo-v1';
+  const TAILLE_MAX = 480;
   const DEFAULTS = {
     NOM_COMPLET: 'Anthony Nadjari',
     ROLE: 'Fondateur',
@@ -230,6 +274,13 @@
 
   const form = document.getElementById('form');
   const inputs = [...form.querySelectorAll('input')];
+  const logoFichier = document.getElementById('logoFichier');
+  const logoApercu = document.getElementById('logoApercu');
+  const logoLabel = document.getElementById('logoLabel');
+  const logoRetirer = document.getElementById('logoRetirer');
+  const logoHint = document.getElementById('logoHint');
+
+  let logo = null; // { src, ratio }
   const grille = document.getElementById('grille');
   const status = document.getElementById('status');
 
@@ -243,7 +294,59 @@
   function valeurs() {
     const v = {};
     inputs.forEach((i) => { v[i.name] = i.value.trim(); });
+    v.LOGO_DATA = logo ? logo.src : '';
+    v.LOGO_RATIO = logo ? logo.ratio : 1;
     return v;
+  }
+
+  /* ---------- logo ---------- */
+
+  /**
+   * Redimensionne le fichier a 480px sur son plus grand cote avant de le
+   * garder : une signature ne doit pas trainer un PNG de 2 Mo dans chaque mail,
+   * et le base64 doit tenir dans le stockage du navigateur.
+   */
+  function lireLogo(file) {
+    const reader = new FileReader();
+    reader.onerror = () => dire('Fichier illisible.');
+    reader.onload = () => {
+      const im = new Image();
+      im.onerror = () => dire('Ce fichier n\'est pas une image exploitable.');
+      im.onload = () => {
+        const echelle = Math.min(1, TAILLE_MAX / Math.max(im.naturalWidth, im.naturalHeight));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.max(1, Math.round(im.naturalWidth * echelle));
+        canvas.height = Math.max(1, Math.round(im.naturalHeight * echelle));
+        canvas.getContext('2d').drawImage(im, 0, 0, canvas.width, canvas.height);
+        logo = { src: canvas.toDataURL('image/png'), ratio: im.naturalWidth / im.naturalHeight };
+        try { localStorage.setItem(STORE_LOGO, JSON.stringify(logo)); } catch (e) { /* trop lourd ou navigation privee */ }
+        appliquerLogo();
+        construire();
+        dire('Logo chargé — il apparaît dans six des compositions.');
+      };
+      im.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function appliquerLogo() {
+    if (logo) {
+      logoApercu.innerHTML = '';
+      const vignette = new Image();
+      vignette.src = logo.src;
+      vignette.alt = 'Logo chargé';
+      logoApercu.append(vignette);
+      logoApercu.hidden = false;
+      logoLabel.textContent = 'Changer le logo';
+      logoRetirer.hidden = false;
+      logoHint.textContent = "En collant la signature dans Gmail, l'image part avec et Gmail l'héberge lui-même — ni domaine ni hébergement nécessaires.";
+    } else {
+      logoApercu.hidden = true;
+      logoApercu.innerHTML = '';
+      logoLabel.textContent = 'Choisir le logo';
+      logoRetirer.hidden = true;
+      logoHint.textContent = "PNG à fond transparent. Le fichier reste dans ton navigateur — rien n'est envoyé nulle part.";
+    }
   }
 
   /* ---------- copie ---------- */
@@ -339,8 +442,8 @@
     const normalisees = normalise(v);
 
     cartes.forEach(({ variante, feuille }) => {
-      if (variante.besoinLogo && !v.LOGO_URL) {
-        feuille.innerHTML = '<p class="manque">Renseigne l\'URL du logo ci-dessus pour voir cette version.</p>';
+      if (variante.besoinLogo && !v.LOGO_DATA) {
+        feuille.innerHTML = '<p class="manque">Charge le logo ci-dessus pour voir cette version.</p>';
         return;
       }
       feuille.innerHTML = variante.render(normalisees);
@@ -352,6 +455,12 @@
   }
 
   function restaurer() {
+    try {
+      const brut = JSON.parse(localStorage.getItem(STORE_LOGO) || 'null');
+      if (brut && typeof brut.src === 'string') logo = brut;
+    } catch (e) { logo = null; }
+    appliquerLogo();
+
     let saved = null;
     try { saved = JSON.parse(localStorage.getItem(STORE) || 'null'); } catch (e) { saved = null; }
     if (!saved) return;
@@ -361,6 +470,20 @@
   }
 
   form.addEventListener('input', construire);
+
+  logoFichier.addEventListener('change', (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (file) lireLogo(file);
+    e.target.value = '';
+  });
+
+  logoRetirer.addEventListener('click', () => {
+    logo = null;
+    try { localStorage.removeItem(STORE_LOGO); } catch (e) { /* rien a nettoyer */ }
+    appliquerLogo();
+    construire();
+    dire('Logo retiré.');
+  });
 
   document.getElementById('reset').addEventListener('click', () => {
     inputs.forEach((i) => { i.value = DEFAULTS[i.name] ?? ''; });

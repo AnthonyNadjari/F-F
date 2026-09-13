@@ -36,6 +36,9 @@ export function normalise(raw) {
   const bare = (v.SITE || '').trim().replace(/^https?:\/\//i, '').replace(/\/+$/, '');
   v.SITE = bare;
   v.SITE_URL = bare ? 'https://' + bare : '';
+  // Le fichier charge dans le navigateur prime sur l'URL hebergee.
+  v.LOGO_SRC = v.LOGO_DATA || v.LOGO_URL || '';
+  v.LOGO_RATIO = Number(v.LOGO_RATIO) > 0 ? Number(v.LOGO_RATIO) : 1;
   return v;
 }
 
@@ -51,6 +54,31 @@ const site = (v, color) => a(esc(v.SITE_URL), esc(v.SITE), color);
 /** Le nom du studio, avec l'esperluette en italique — le detail du logo. */
 const wordmark = ({ size = 13, color = INK, track = 3, weight = 'normal' } = {}) =>
   `<span style="font-family:${SERIF};font-size:${size}px;line-height:${Math.round(size * 1.3)}px;font-weight:${weight};color:${color};letter-spacing:${track}px;text-transform:uppercase;">FINCK <i style="font-style:italic;">&amp;</i> FISCH</span>`;
+
+/**
+ * Le logo, dimensionne par sa hauteur : la largeur suit le ratio du fichier,
+ * ce qui marche aussi bien pour un lockup carre que pour une version large.
+ */
+const image = (src, hauteur, ratio, align) => {
+  const largeur = Math.round(hauteur * (ratio || 1));
+  return `<img src="${src}" alt="Finck &amp; Fisch" width="${largeur}" height="${hauteur}" style="display:block;${align === 'center' ? 'margin:0 auto;' : ''}width:${largeur}px;height:${hauteur}px;border:0;outline:none;text-decoration:none;">`;
+};
+
+/**
+ * Un lockup large reste lisible en petit, un lockup carre non : sa hauteur
+ * utile est celle du bloc entier, pas d'une ligne. On compense.
+ */
+const hauteurUtile = (hauteur, ratio) => {
+  if (ratio >= 2.2) return hauteur;
+  if (ratio >= 1.3) return Math.round(hauteur * 1.3);
+  return Math.round(hauteur * 1.75);
+};
+
+/** Le logo s'il est fourni, sinon le nom du studio compose. */
+const marque = (v, { hauteur = 44, align = 'left', size = 12, track = 3, color = INK } = {}) =>
+  v.LOGO_SRC
+    ? image(esc(v.LOGO_SRC), hauteurUtile(hauteur, v.LOGO_RATIO), v.LOGO_RATIO, align)
+    : wordmark({ size, track, color });
 
 /** Filet horizontal : une cellule de 1px, rendu fiable partout. */
 const hairline = (width, color = RULE, align = 'left') =>
@@ -70,6 +98,7 @@ const open = (extra = '') =>
  */
 function filet(v) {
   return `${open()}
+  ${v.LOGO_SRC ? `<tr><td style="padding:0 0 13px 0;">${marque(v, { hauteur: 46 })}</td></tr>` : ''}
   <tr>
     <td style="padding:0 0 2px 0;font-family:${SERIF};font-size:20px;line-height:24px;color:${INK};letter-spacing:0.2px;">${esc(v.NOM_COMPLET)}</td>
   </tr>
@@ -96,9 +125,10 @@ function colonnes(v) {
   return `${open()}
   <tr>
     <td valign="top" style="padding:0 22px 0 0;">
+      ${v.LOGO_SRC ? `<div style="padding:0 0 11px 0;">${marque(v, { hauteur: 42 })}</div>` : ''}
       <div style="font-family:${SERIF};font-size:15px;line-height:20px;color:${INK};letter-spacing:1.4px;text-transform:uppercase;">${esc(v.NOM_COMPLET)}</div>
       <div style="font-size:11px;line-height:17px;color:${SOFT};padding-top:3px;">${esc(v.ROLE)}</div>
-      <div style="padding-top:10px;">${wordmark({ size: 11, track: 2.4 })}</div>
+      ${v.LOGO_SRC ? '' : `<div style="padding-top:10px;">${wordmark({ size: 11, track: 2.4 })}</div>`}
     </td>
     <td width="1" bgcolor="${RULE}" style="width:1px;min-width:1px;line-height:1px;font-size:1px;">&nbsp;</td>
     <td valign="top" style="padding:2px 0 0 22px;font-size:12px;line-height:20px;color:${INK};">
@@ -114,6 +144,8 @@ function colonnes(v) {
  * C — Bandeau
  * Le nom du studio en reserve sur un bandeau noir. C'est la plus affirmee :
  * a garder pour les premiers contacts et les propositions commerciales.
+ * Volontairement sans logo : le logo est noir, il disparaitrait sur le
+ * bandeau. Il faudra l'export blanc pour l'y mettre.
  */
 function bandeau(v) {
   return `${open()}
@@ -196,11 +228,12 @@ function fiche(v) {
   </tr>`;
 
   return `${open()}
+  ${v.LOGO_SRC ? `<tr><td colspan="2" style="padding:0 0 13px 0;">${marque(v, { hauteur: 44 })}</td></tr>` : ''}
   <tr>
     <td colspan="2" style="padding:0 0 1px 0;font-family:${SERIF};font-size:17px;line-height:22px;color:${INK};letter-spacing:0.2px;">${esc(v.NOM_COMPLET)}</td>
   </tr>
   <tr>
-    <td colspan="2" style="padding:0 0 14px 0;font-size:11px;line-height:17px;color:${SOFT};">${esc(v.ROLE)}, ${wordmark({ size: 11, color: SOFT, track: 2 })}</td>
+    <td colspan="2" style="padding:0 0 14px 0;font-size:11px;line-height:17px;color:${SOFT};">${esc(v.ROLE)}${v.LOGO_SRC ? '' : `, ${wordmark({ size: 11, color: SOFT, track: 2 })}`}</td>
   </tr>
   ${ligne('E', mail(v, INK))}
   ${ligne('T', tel(v, INK))}
@@ -235,9 +268,7 @@ function compacte(v) {
 function logo(v) {
   return `${open('text-align:center;')}
   <tr>
-    <td align="center" style="padding:0 0 12px 0;">
-      <img src="${esc(v.LOGO_URL)}" alt="Finck &amp; Fisch" width="132" height="44" style="display:block;margin:0 auto;width:132px;height:44px;border:0;outline:none;text-decoration:none;">
-    </td>
+    <td align="center" style="padding:0 0 12px 0;">${marque(v, { hauteur: 78, align: 'center' })}</td>
   </tr>
   <tr><td align="center" style="padding:0 0 12px 0;">${hairline(34, RULE, 'center')}</td></tr>
   <tr>
@@ -267,25 +298,25 @@ export const VARIANTS = [
   {
     id: 'filet',
     nom: 'Filet',
-    note: 'Nom en grand serif, filet court, coordonnees empilees. Le choix par defaut.',
+    note: 'Logo en tete, nom en grand serif, filet court. Le choix par defaut.',
     render: filet
   },
   {
     id: 'colonnes',
     nom: 'Colonnes',
-    note: 'Identite a gauche, coordonnees a droite. Compact en hauteur.',
+    note: 'Logo et identite a gauche, coordonnees a droite. Compact en hauteur.',
     render: colonnes
   },
   {
     id: 'bandeau',
     nom: 'Bandeau',
-    note: 'Nom du studio en reserve sur noir. La plus affirmee, pour les premiers contacts.',
+    note: 'Nom du studio en reserve sur noir. Sans logo : il faudrait l\'export blanc.',
     render: bandeau
   },
   {
     id: 'centree',
     nom: 'Centree',
-    note: 'Composition symetrique et sobre, pour les mails courts.',
+    note: 'Symetrique et sobre, sans logo. Celle qui passe le mieux sous un mail court.',
     render: centree
   },
   {
@@ -297,7 +328,7 @@ export const VARIANTS = [
   {
     id: 'fiche',
     nom: 'Fiche',
-    note: 'Coordonnees etiquetees E / T / W, comme une fiche technique.',
+    note: 'Logo en tete, coordonnees etiquetees E / T / W comme une fiche technique.',
     render: fiche
   },
   {
@@ -308,8 +339,8 @@ export const VARIANTS = [
   },
   {
     id: 'logo',
-    nom: 'Logo',
-    note: 'Le vrai logo en tete. Necessite le PNG heberge en https.',
+    nom: 'Logo centre',
+    note: 'Le logo en grand, seul en tete. La plus proche d\'une carte de visite.',
     render: logo,
     besoinLogo: true
   }
