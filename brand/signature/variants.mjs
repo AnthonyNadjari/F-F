@@ -1,15 +1,18 @@
 /**
- * Signatures email Finck & Fisch — source unique.
+ * Signature email Finck & Fisch — source unique.
  *
- * Ce fichier est utilise a la fois par build.mjs (generation en ligne de
- * commande) et par generateur.html (page de copie). Une composition modifiee
- * ici l'est partout : ne pas dupliquer le HTML ailleurs.
+ * Utilise a la fois par build.mjs (generation en ligne de commande) et par
+ * generateur.html (page de copie), qui l'aplatit dedans a la construction.
  *
- * Contraintes des clients mail, valables pour tout ce qui suit :
- * tableaux uniquement (Outlook Windows rend le HTML avec le moteur de Word),
- * styles inline uniquement, polices systeme uniquement, filets en cellules de
- * 1px avec bgcolor plutot qu'en border, couleur forcee sur le <a> ET sur un
- * <span> interieur sinon iOS repasse les liens en bleu.
+ * Contraintes des clients mail, qui expliquent tout ce qui suit :
+ * tableaux uniquement (Outlook Windows rend le HTML avec le moteur de Word,
+ * qui ignore flexbox et grid), styles inline uniquement (Gmail supprime les
+ * <style>), polices systeme uniquement (une webfont ne se charge pas), filets
+ * en cellules de 1px avec bgcolor plutot qu'en border, et couleur forcee sur
+ * le <a> ET sur un <span> interieur sinon iOS repasse les liens en bleu.
+ *
+ * Les sept autres compositions explorees ont ete retirees au profit de
+ * celle-ci ; elles restent dans l'historique git (commit 3638374).
  */
 
 import { MONOGRAMME } from './logo-embed.mjs';
@@ -18,10 +21,11 @@ const SERIF = "Georgia,'Times New Roman',Times,serif";
 const SANS = 'Arial,Helvetica,sans-serif';
 
 const INK = '#111111';
-const SOFT = '#6F6A63';
+const CONTACT = '#33302C';  // encre adoucie : les coordonnees ne doivent pas
+                            // rivaliser avec le nom, mais rester franchement
+                            // lisibles sur un fond clair comme sombre
 const RULE = '#DCD7D0';
 const FAINT = '#A39C93';
-const PAPER = '#FFFFFF';
 
 export const esc = (s) =>
   String(s == null ? '' : s)
@@ -30,14 +34,16 @@ export const esc = (s) =>
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
 
-/** Deduit les champs calcules (lien tel:, URL du site) des champs saisis. */
+/** Deduit les champs calcules (lien tel:, URL du site, source du logo). */
 export function normalise(raw) {
   const v = { ...raw };
   v.TELEPHONE = (v.TELEPHONE || '').trim();
   v.TEL_BRUT = v.TELEPHONE.replace(/[^\d+]/g, '');
+
   const bare = (v.SITE || '').trim().replace(/^https?:\/\//i, '').replace(/\/+$/, '');
   v.SITE = bare;
   v.SITE_URL = bare ? 'https://' + bare : '';
+
   // Un fichier charge dans le navigateur prime sur une URL hebergee, qui prime
   // sur le monogramme du studio embarque. Le ratio suit la source retenue :
   // celui du monogramme est connu, celui d'un fichier tiers est mesure ailleurs.
@@ -46,253 +52,51 @@ export function normalise(raw) {
   v.LOGO_RATIO = fourni
     ? (Number(v.LOGO_RATIO) > 0 ? Number(v.LOGO_RATIO) : 1)
     : MONOGRAMME.ratio;
+
   return v;
 }
 
-/* ---------- fragments partages ---------- */
+/* ---------- fragments ---------- */
 
 const a = (href, label, color) =>
   `<a href="${href}" style="color:${color};text-decoration:none;"><span style="color:${color};text-decoration:none;">${label}</span></a>`;
 
-const mail = (v, color) => a('mailto:' + esc(v.EMAIL), esc(v.EMAIL), color);
-const tel = (v, color) => a('tel:' + esc(v.TEL_BRUT), esc(v.TELEPHONE), color);
-const site = (v, color) => a(esc(v.SITE_URL), esc(v.SITE), color);
+const mail = (v) => a('mailto:' + esc(v.EMAIL), esc(v.EMAIL), CONTACT);
+const tel = (v) => a('tel:' + esc(v.TEL_BRUT), esc(v.TELEPHONE), CONTACT);
+const site = (v) => a(esc(v.SITE_URL), esc(v.SITE), CONTACT);
 
-/** Le nom du studio, avec l'esperluette en italique — le detail du logo. */
-const wordmark = ({ size = 13, color = INK, track = 3, weight = 'normal' } = {}) =>
-  `<span style="font-family:${SERIF};font-size:${size}px;line-height:${Math.round(size * 1.3)}px;font-weight:${weight};color:${color};letter-spacing:${track}px;text-transform:uppercase;">FINCK <i style="font-style:italic;">&amp;</i> FISCH</span>`;
-
-/**
- * Le logo, dimensionne par sa hauteur : la largeur suit le ratio du fichier,
- * ce qui marche aussi bien pour un lockup carre que pour une version large.
- */
-const image = (src, hauteur, ratio, align) => {
-  const largeur = Math.round(hauteur * (ratio || 1));
-  return `<img src="${src}" alt="Finck &amp; Fisch" width="${largeur}" height="${hauteur}" style="display:block;${align === 'center' ? 'margin:0 auto;' : ''}width:${largeur}px;height:${hauteur}px;border:0;outline:none;text-decoration:none;">`;
+const logo = (v, hauteur) => {
+  const largeur = Math.round(hauteur * (v.LOGO_RATIO || 1));
+  return `<img src="${esc(v.LOGO_SRC)}" alt="Finck &amp; Fisch" width="${largeur}" height="${hauteur}" style="display:block;width:${largeur}px;height:${hauteur}px;border:0;outline:none;text-decoration:none;">`;
 };
-
-/**
- * Un lockup large reste lisible en petit, un lockup carre non : sa hauteur
- * utile est celle du bloc entier, pas d'une ligne. On compense.
- */
-const hauteurUtile = (hauteur, ratio) => {
-  if (ratio >= 2.2) return hauteur;
-  if (ratio >= 1.3) return Math.round(hauteur * 1.3);
-  return Math.round(hauteur * 1.75);
-};
-
-/** Le logo s'il est fourni, sinon le nom du studio compose. */
-const marque = (v, { hauteur = 44, align = 'left', size = 12, track = 3,
-                     color = INK, exact = false } = {}) =>
-  v.LOGO_SRC
-    ? image(esc(v.LOGO_SRC),
-            exact ? hauteur : hauteurUtile(hauteur, v.LOGO_RATIO),
-            v.LOGO_RATIO, align)
-    : wordmark({ size, track, color });
 
 /** Filet horizontal : une cellule de 1px, rendu fiable partout. */
-const hairline = (width, color = RULE, align = 'left') =>
-  `<table role="presentation" cellpadding="0" cellspacing="0" border="0" align="${align}" style="border-collapse:collapse;${align === 'center' ? 'margin:0 auto;' : ''}"><tr><td width="${width}" height="1" bgcolor="${color}" style="width:${width}px;height:1px;line-height:1px;font-size:1px;">&nbsp;</td></tr></table>`;
+const hairline = (width) =>
+  `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;"><tr><td width="${width}" height="1" bgcolor="${RULE}" style="width:${width}px;height:1px;line-height:1px;font-size:1px;">&nbsp;</td></tr></table>`;
 
-const dot = (color) => `<span style="color:${color};">&nbsp;&nbsp;&middot;&nbsp;&nbsp;</span>`;
-
-const open = (extra = '') =>
-  `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;font-family:${SANS};${extra}">`;
-
-/* ---------- compositions ---------- */
+/* ---------- la signature ---------- */
 
 /**
- * A — Filet
- * Logo a gauche sur toute la hauteur du bloc, filet vertical, texte a droite.
- * La hauteur du logo est calee sur celle du texte : nom (24) + role (17) +
- * filet et ses marges (25) + trois lignes de coordonnees (60). Si on touche a
- * ces valeurs, il faut reprendre HAUTEUR_BLOC, sinon le logo depasse.
+ * Hauteur du bloc texte, donc du logo : nom (24) + role (17) + filet et ses
+ * marges (25) + trois lignes de coordonnees a 22 (66). Si on touche a une de
+ * ces valeurs, il faut reprendre ce nombre, sinon le logo depasse du bloc.
  */
-const HAUTEUR_BLOC = 126;
+const HAUTEUR_BLOC = 132;
 
-function filet(v) {
-  return `${open()}
+function signature(v) {
+  return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;font-family:${SANS};">
   <tr>
-    <td valign="middle" style="padding:0 24px 0 0;">${marque(v, { hauteur: HAUTEUR_BLOC, exact: true, size: 15, track: 3 })}</td>
+    <td valign="middle" style="padding:0 24px 0 0;">${logo(v, HAUTEUR_BLOC)}</td>
     <td width="1" bgcolor="${RULE}" style="width:1px;min-width:1px;line-height:1px;font-size:1px;">&nbsp;</td>
     <td valign="middle" style="padding:0 0 0 24px;">
       <div style="font-family:${SERIF};font-size:20px;line-height:24px;color:${INK};letter-spacing:0.2px;">${esc(v.NOM_COMPLET)}</div>
-      <div style="font-size:10px;line-height:15px;color:${FAINT};letter-spacing:2.2px;text-transform:uppercase;padding-top:2px;">${esc(v.ROLE)} &nbsp;/&nbsp; Finck &amp; Fisch</div>
+      <div style="font-size:10px;line-height:15px;color:${FAINT};letter-spacing:2.2px;text-transform:uppercase;padding-top:2px;white-space:nowrap;">${esc(v.ROLE)} &nbsp;/&nbsp; Finck &amp; Fisch</div>
       <div style="padding:12px 0;">${hairline(200)}</div>
-      <div style="font-size:12px;line-height:20px;color:${INK};">
-        ${mail(v, INK)}<br>
-        ${tel(v, INK)}<br>
-        ${site(v, INK)}
+      <div style="font-family:${SERIF};font-size:13px;line-height:22px;color:${CONTACT};letter-spacing:0.3px;">
+        ${mail(v)}<br>
+        ${tel(v)}<br>
+        ${site(v)}
       </div>
-    </td>
-  </tr>
-</table>`;
-}
-
-/**
- * B — Colonnes
- * Identite a gauche, coordonnees a droite, filet vertical entre les deux.
- * Compact en hauteur, utile quand la signature suit un mail long.
- */
-function colonnes(v) {
-  return `${open()}
-  <tr>
-    <td valign="top" style="padding:0 22px 0 0;">
-      ${v.LOGO_SRC ? `<div style="padding:0 0 11px 0;">${marque(v, { hauteur: 42 })}</div>` : ''}
-      <div style="font-family:${SERIF};font-size:15px;line-height:20px;color:${INK};letter-spacing:1.4px;text-transform:uppercase;">${esc(v.NOM_COMPLET)}</div>
-      <div style="font-size:11px;line-height:17px;color:${SOFT};padding-top:3px;">${esc(v.ROLE)}</div>
-      ${v.LOGO_SRC ? '' : `<div style="padding-top:10px;">${wordmark({ size: 11, track: 2.4 })}</div>`}
-    </td>
-    <td width="1" bgcolor="${RULE}" style="width:1px;min-width:1px;line-height:1px;font-size:1px;">&nbsp;</td>
-    <td valign="top" style="padding:2px 0 0 22px;font-size:12px;line-height:20px;color:${INK};">
-      ${mail(v, INK)}<br>
-      ${tel(v, INK)}<br>
-      ${site(v, INK)}
-    </td>
-  </tr>
-</table>`;
-}
-
-/**
- * C — Bandeau
- * Le nom du studio en reserve sur un bandeau noir. C'est la plus affirmee :
- * a garder pour les premiers contacts et les propositions commerciales.
- * Volontairement sans logo : le logo est noir, il disparaitrait sur le
- * bandeau. Il faudra l'export blanc pour l'y mettre.
- */
-function bandeau(v) {
-  return `${open()}
-  <tr>
-    <td bgcolor="${INK}" style="background-color:${INK};padding:11px 18px;">${wordmark({ size: 13, color: PAPER, track: 3.4 })}</td>
-  </tr>
-  <tr>
-    <td style="padding:14px 0 0 0;font-family:${SERIF};font-size:15px;line-height:20px;color:${INK};letter-spacing:0.2px;">
-      ${esc(v.NOM_COMPLET)}<span style="color:${FAINT};">&nbsp;&nbsp;—&nbsp;&nbsp;</span><span style="font-family:${SANS};font-size:11px;letter-spacing:1.8px;text-transform:uppercase;color:${SOFT};">${esc(v.ROLE)}</span>
-    </td>
-  </tr>
-  <tr>
-    <td style="padding:8px 0 0 0;font-size:12px;line-height:19px;color:${INK};">
-      ${mail(v, INK)}${dot(FAINT)}${tel(v, INK)}${dot(FAINT)}${site(v, INK)}
-    </td>
-  </tr>
-</table>`;
-}
-
-/**
- * D — Centree
- * Composition symetrique, filet court au centre. La plus sobre, celle qui
- * passe le mieux sous un mail court.
- */
-function centree(v) {
-  return `${open('text-align:center;')}
-  <tr><td align="center" style="padding:0 0 10px 0;">${wordmark({ size: 12, track: 3.4 })}</td></tr>
-  <tr><td align="center" style="padding:0 0 11px 0;">${hairline(34, RULE, 'center')}</td></tr>
-  <tr>
-    <td align="center" style="font-size:11px;line-height:16px;color:${INK};letter-spacing:2px;text-transform:uppercase;">${esc(v.NOM_COMPLET)}</td>
-  </tr>
-  <tr>
-    <td align="center" style="padding:3px 0 11px 0;font-family:${SERIF};font-style:italic;font-size:12px;line-height:17px;color:${SOFT};">${esc(v.ROLE)}</td>
-  </tr>
-  <tr>
-    <td align="center" style="font-size:11px;line-height:18px;color:${SOFT};">
-      ${mail(v, SOFT)}${dot(RULE)}${tel(v, SOFT)}${dot(RULE)}${site(v, SOFT)}
-    </td>
-  </tr>
-</table>`;
-}
-
-/**
- * E — Bornes
- * Le bloc tenu entre deux filets pleine largeur. Lisible meme quand le client
- * mail ecrase les marges du fil de discussion.
- */
-function bornes(v) {
-  return `${open('width:340px;')}
-  <tr><td>${hairline(340, '#111111')}</td></tr>
-  <tr>
-    <td style="padding:13px 0 0 0;font-family:${SERIF};font-size:16px;line-height:21px;color:${INK};letter-spacing:0.2px;">${esc(v.NOM_COMPLET)}</td>
-  </tr>
-  <tr>
-    <td style="padding:2px 0 11px 0;font-size:10px;line-height:15px;color:${FAINT};letter-spacing:2.2px;text-transform:uppercase;">${esc(v.ROLE)}</td>
-  </tr>
-  <tr>
-    <td style="padding:0 0 13px 0;font-size:12px;line-height:19px;color:${INK};">
-      ${mail(v, INK)}<br>
-      ${tel(v, INK)}${dot(RULE)}${site(v, INK)}
-    </td>
-  </tr>
-  <tr><td>${hairline(340)}</td></tr>
-  <tr>
-    <td style="padding:9px 0 0 0;">${wordmark({ size: 10, color: FAINT, track: 3 })}</td>
-  </tr>
-</table>`;
-}
-
-/**
- * F — Fiche
- * Les coordonnees en colonne etiquetee, comme une fiche technique. Le plus
- * lisible quand il y a beaucoup d'informations a donner.
- */
-function fiche(v) {
-  const ligne = (label, valeur) => `
-  <tr>
-    <td valign="top" width="26" style="width:26px;padding:0 0 5px 0;font-size:9px;line-height:18px;color:${FAINT};letter-spacing:1.6px;">${label}</td>
-    <td valign="top" style="padding:0 0 5px 0;font-size:12px;line-height:18px;color:${INK};">${valeur}</td>
-  </tr>`;
-
-  return `${open()}
-  ${v.LOGO_SRC ? `<tr><td colspan="2" style="padding:0 0 13px 0;">${marque(v, { hauteur: 44 })}</td></tr>` : ''}
-  <tr>
-    <td colspan="2" style="padding:0 0 1px 0;font-family:${SERIF};font-size:17px;line-height:22px;color:${INK};letter-spacing:0.2px;">${esc(v.NOM_COMPLET)}</td>
-  </tr>
-  <tr>
-    <td colspan="2" style="padding:0 0 14px 0;font-size:11px;line-height:17px;color:${SOFT};">${esc(v.ROLE)}${v.LOGO_SRC ? '' : `, ${wordmark({ size: 11, color: SOFT, track: 2 })}`}</td>
-  </tr>
-  ${ligne('E', mail(v, INK))}
-  ${ligne('T', tel(v, INK))}
-  ${ligne('W', site(v, INK))}
-</table>`;
-}
-
-/**
- * G — Compacte
- * Deux lignes, pour les reponses dans un fil deja long. A regler comme
- * signature de reponse dans Gmail, la premiere restant pour les nouveaux mails.
- */
-function compacte(v) {
-  return `${open()}
-  <tr><td>${hairline(260)}</td></tr>
-  <tr>
-    <td style="padding:9px 0 0 0;font-family:${SERIF};font-size:13px;line-height:18px;color:${INK};letter-spacing:1.2px;text-transform:uppercase;">${esc(v.NOM_COMPLET)}${dot(FAINT)}${wordmark({ size: 12, track: 1.6 })}</td>
-  </tr>
-  <tr>
-    <td style="padding:4px 0 0 0;font-size:11px;line-height:17px;color:${SOFT};">
-      ${mail(v, SOFT)}${dot(RULE)}${tel(v, SOFT)}${dot(RULE)}${site(v, SOFT)}
-    </td>
-  </tr>
-</table>`;
-}
-
-/**
- * H — Logo
- * Le vrai logo en tete, centre. Ne fonctionne qu'une fois le PNG heberge en
- * https a une URL stable : voir brand/logo/README.md.
- */
-function logo(v) {
-  return `${open('text-align:center;')}
-  <tr>
-    <td align="center" style="padding:0 0 12px 0;">${marque(v, { hauteur: 62, align: 'center' })}</td>
-  </tr>
-  <tr><td align="center" style="padding:0 0 12px 0;">${hairline(34, RULE, 'center')}</td></tr>
-  <tr>
-    <td align="center" style="font-size:11px;line-height:16px;color:${INK};letter-spacing:2px;text-transform:uppercase;">${esc(v.NOM_COMPLET)}</td>
-  </tr>
-  <tr>
-    <td align="center" style="padding:3px 0 11px 0;font-family:${SERIF};font-style:italic;font-size:12px;line-height:17px;color:${SOFT};">${esc(v.ROLE)}</td>
-  </tr>
-  <tr>
-    <td align="center" style="font-size:11px;line-height:18px;color:${SOFT};">
-      ${mail(v, SOFT)}${dot(RULE)}${tel(v, SOFT)}${dot(RULE)}${site(v, SOFT)}
     </td>
   </tr>
 </table>`;
@@ -308,54 +112,7 @@ export function plain(raw) {
 /* ---------- catalogue ---------- */
 
 export const VARIANTS = [
-  {
-    id: 'filet',
-    nom: 'Filet',
-    note: 'Logo a gauche sur toute la hauteur, filet vertical, texte a droite. Le choix par defaut.',
-    render: filet
-  },
-  {
-    id: 'colonnes',
-    nom: 'Colonnes',
-    note: 'Logo et identite a gauche, coordonnees a droite. Compact en hauteur.',
-    render: colonnes
-  },
-  {
-    id: 'bandeau',
-    nom: 'Bandeau',
-    note: 'Nom du studio en reserve sur noir. Sans logo : il faudrait l\'export blanc.',
-    render: bandeau
-  },
-  {
-    id: 'centree',
-    nom: 'Centree',
-    note: 'Symetrique et sobre, sans logo. Celle qui passe le mieux sous un mail court.',
-    render: centree
-  },
-  {
-    id: 'bornes',
-    nom: 'Bornes',
-    note: 'Bloc tenu entre deux filets. Tient bon quand le client mail ecrase les marges.',
-    render: bornes
-  },
-  {
-    id: 'fiche',
-    nom: 'Fiche',
-    note: 'Logo en tete, coordonnees etiquetees E / T / W comme une fiche technique.',
-    render: fiche
-  },
-  {
-    id: 'compacte',
-    nom: 'Compacte',
-    note: 'Deux lignes, a regler comme signature de reponse.',
-    render: compacte
-  },
-  {
-    id: 'logo',
-    nom: 'Logo centre',
-    note: 'Le logo en grand, seul en tete. La plus proche d\'une carte de visite.',
-    render: logo
-  }
+  { id: 'signature', nom: 'Signature', note: '', render: signature }
 ];
 
 export function build(id, raw) {

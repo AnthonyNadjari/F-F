@@ -156,7 +156,7 @@
 
   .grille {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(340px, 520px));
     gap: 34px 30px;
   }
   @media (max-width: 420px) {
@@ -178,8 +178,8 @@
     font-size: 11.5px;
     line-height: 1.45;
     color: var(--ink-faint);
-    min-height: 33px;
   }
+  .note:empty { display: none; }
 
   /* Volontairement clair dans les deux themes : c'est ce que verra le destinataire. */
   .feuille {
@@ -211,7 +211,7 @@
 
   <header>
     <span class="wordmark">Finck <i>&amp;</i> Fisch</span>
-    <p>Signatures email</p>
+    <p>Signature email</p>
     <span class="right">Valeurs d'exemple — à remplacer</span>
   </header>
 
