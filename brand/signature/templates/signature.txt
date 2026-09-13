@@ -1,5 +1,0 @@
---
-{{NOM_COMPLET}} | {{ROLE}}
-Finck & Fisch - Digital Studio
-{{EMAIL}} | {{TELEPHONE}}
-{{SITE}}

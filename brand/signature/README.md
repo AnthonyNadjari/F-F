@@ -1,88 +1,81 @@
-# Signature email — Finck & Fisch
+# Signatures email — Finck & Fisch
 
-Signature HTML pour les mails clients. Trois variantes, un seul jeu de variables,
-un script qui genere les fichiers prets a coller.
+Huit compositions, un seul jeu de coordonnees. Toutes en noir et blanc, mais
+construites differemment : ce qui les distingue, c'est la mise en page et les
+contrastes d'echelle, pas la couleur.
+
+| | Composition | Pour quoi |
+|---|---|---|
+| A | **Filet** | Nom en grand serif, filet court, coordonnees empilees. Le choix par defaut. |
+| B | **Colonnes** | Identite a gauche, coordonnees a droite. Compact en hauteur. |
+| C | **Bandeau** | Nom du studio en reserve sur noir. La plus affirmee : premiers contacts, propositions. |
+| D | **Centree** | Symetrique et sobre, pour les mails courts. |
+| E | **Bornes** | Bloc tenu entre deux filets. Tient bon quand le client mail ecrase les marges. |
+| F | **Fiche** | Coordonnees etiquetees E / T / W, quand il y a beaucoup a donner. |
+| G | **Compacte** | Deux lignes, a regler comme signature de **reponse**. |
+| H | **Logo** | Le vrai logo en tete. Necessite le PNG heberge en https. |
+
+Plus une version texte brut, la seule que garde iOS.
 
 ## Deux facons de generer
 
-- **Le generateur** (`generateur.html`) : on remplit les champs, on voit le
-  rendu dans une fausse fenetre de mail, on copie. C'est la voie a donner a
-  quelqu'un qui ne touche pas au code. Le fichier est aussi publie en ligne.
-- **Le script** (`build.mjs`) : pour generer les trois variantes d'un coup, ou
-  plusieurs signatures depuis plusieurs fichiers de variables.
+- **Le generateur** (`generateur.html`, publie en ligne) : on remplit les
+  champs, les huit versions s'affichent cote a cote, on copie celle qu'on veut.
+  C'est la voie a donner a quelqu'un qui ne touche pas au code. Il s'ouvre en
+  ligne, pas en double-cliquant le fichier : il charge `variants.mjs` en module.
+- **Le script** : `node brand/signature/build.mjs`, qui ecrit tout dans `dist/`
+  avec une page d'apercu. Pour une autre personne, dupliquer `variables.json`
+  (ex. `charles.json`) et lancer `build.mjs --vars brand/signature/charles.json`.
 
-Les gabarits du generateur sont une copie de ceux de `templates/` : toute
-modification de l'un doit etre reportee dans l'autre.
+## Source unique
 
-## Utilisation du script
+Les compositions vivent dans **`variants.mjs`**, utilise a la fois par le script
+et par le generateur. Une composition modifiee la l'est partout : il n'y a pas
+de copie du HTML ailleurs, et il ne faut pas en creer.
 
-1. Ouvrir `variables.json` et remplacer les valeurs (elles sont preremplies avec
-   des exemples : `prenom@finckfisch.fr`, `+33 6 00 00 00 00`, etc.).
-2. Generer :
-   ```bash
-   node brand/signature/build.mjs
-   ```
-3. Ouvrir `brand/signature/dist/apercu.html` dans un navigateur pour verifier.
-4. Selectionner la signature dans l'apercu, copier (Cmd/Ctrl+C), coller dans le
-   client mail. On copie le **rendu**, pas le code source.
+Pour ajouter une composition : une fonction qui recoit les valeurs et renvoie du
+HTML, puis une entree dans `VARIANTS`. Elle apparait automatiquement dans le
+generateur et dans `dist/`.
 
-Une signature par personne : dupliquer `variables.json` (ex: `charles.json`) et
-generer avec `node brand/signature/build.mjs --vars brand/signature/charles.json`.
-
-## Variables
+## Champs
 
 | Cle | Exemple | Note |
 |---|---|---|
-| `NOM_COMPLET` | `Anthony Nadjari` | Mis en capitales automatiquement |
+| `NOM_COMPLET` | `Anthony Nadjari` | |
 | `ROLE` | `Fondateur` | |
 | `EMAIL` | `anthony@finckfisch.fr` | |
-| `TELEPHONE` | `+33 6 00 00 00 00` | Version affichee, avec espaces |
-| `TEL_BRUT` | `+33600000000` | Version cliquable `tel:`, sans espaces |
-| `SITE` | `finckfisch.fr` | Version affichee, sans `https://` |
-| `SITE_URL` | `https://finckfisch.fr` | Version cliquable |
-| `LOGO_URL` | `https://finckfisch.fr/brand/monogram@2x.png` | Variante C uniquement |
-
-## Variantes
-
-- **standard** — monogramme texte `F&F` + filet vertical + coordonnees.
-  C'est celle par defaut : aucune image, donc rien a heberger et rien qui puisse
-  se retrouver bloque par le client mail.
-- **compacte** — deux lignes, pour les reponses dans un fil deja long.
-- **logo-image** — identique a la standard, mais avec le vrai logo en image.
-  A n'utiliser **qu'une fois le domaine achete et le PNG heberge** en https a une
-  URL stable. Tant que ce n'est pas le cas, rester sur la standard.
+| `TELEPHONE` | `+33 6 00 00 00 00` | Le lien `tel:` est deduit automatiquement |
+| `SITE` | `finckfisch.fr` | Sans `https://`, il est ajoute au lien |
+| `LOGO_URL` | `https://finckfisch.fr/brand/monogram@2x.png` | Composition H uniquement |
 
 ## Installation
 
-- **Gmail (web)** — Parametres → Voir tous les parametres → Generale → Signature →
-  Creer. Coller le rendu. Penser a definir la signature par defaut pour les
-  nouveaux messages **et** pour les reponses (on peut mettre la compacte en
-  reponse).
+- **Gmail (web)** — Parametres → Voir tous les parametres → Generale → Signature.
+  Coller le **rendu**, pas le code. Definir une signature pour les nouveaux
+  messages et une autre pour les reponses (la compacte).
 - **Outlook (web)** — Parametres → Courrier → Composer et repondre → Signature.
 - **Outlook (Windows)** — Fichier → Options → Courrier → Signatures. Le moteur de
-  rendu est Word : le filet vertical et les capitales espacees peuvent legerement
-  bouger, c'est normal et prevu.
-- **Apple Mail** — Reglages → Signatures. Decocher « Toujours utiliser la police
-  par defaut », sinon la mise en forme est ecrasee.
-- **iPhone** — iOS ne garde pas le HTML : utiliser `signature.txt`.
+  rendu est celui de Word : les capitales espacees peuvent bouger legerement.
+- **Apple Mail** — Reglages → Signatures, en decochant « Toujours utiliser la
+  police par defaut », sinon la mise en forme est ecrasee.
+- **iPhone** — iOS ne garde pas le HTML : utiliser la version texte.
 
 ## Regles a ne pas casser
 
-Les clients mail ne sont pas des navigateurs. Ce qui est en place est deliberé :
+Les clients mail ne sont pas des navigateurs. Ce qui est en place est delibere :
 
-- **Tout en styles inline.** Ne jamais ajouter de `<style>` ni de classes CSS,
-  Gmail et Outlook les suppriment.
-- **Tableaux, pas de flexbox ni de grid.** Outlook Windows rend le HTML avec le
+- **Tout en styles inline**, jamais de `<style>` ni de classes : Gmail et Outlook
+  les suppriment.
+- **Tableaux, pas de flexbox ni de grid** : Outlook Windows rend le HTML avec le
   moteur de Word, qui ne connait ni l'un ni l'autre.
-- **Polices systeme uniquement** (Georgia / Arial). Pas de Google Fonts : les
-  webfonts ne se chargent pas dans la majorite des clients, et le texte
-  retomberait sur une police par defaut imprevisible.
-- **Pas de SVG.** Gmail supprime les images SVG. Si logo il y a : PNG a fond
-  transparent, exporte en x2, affiche avec `width`/`height` explicites.
-- **Filets en cellules de 1px avec `bgcolor`**, pas en `border`. Rendu bien plus
+- **Polices systeme uniquement** (Georgia, Arial). Une webfont ne se charge pas
+  et le texte retomberait sur une police imprevisible.
+- **Pas de SVG** : Gmail les supprime. Pour la composition H, un PNG a fond
+  transparent, exporte en x2, avec `width` et `height` explicites.
+- **Filets en cellules de 1px avec `bgcolor`**, pas en `border` : bien plus
   fiable sur Outlook.
-- **Couleur forcee sur les liens** (sur le `<a>` *et* sur un `<span>` interieur),
-  sinon iOS et Gmail repassent les liens en bleu souligne.
-- **Mode sombre** : les clients inversent les couleurs eux-memes et cela ne se
+- **Couleur forcee sur les liens**, sur le `<a>` *et* sur un `<span>` interieur,
+  sinon iOS et Gmail les repassent en bleu souligne.
+- **Mode sombre** : les clients inversent les couleurs eux-memes, cela ne se
   pilote pas depuis une signature. D'ou le fond transparent et le gris moyen
-  (`#77716A`) pour les lignes secondaires — il reste lisible dans les deux sens.
+  pour les lignes secondaires, lisible dans les deux sens.

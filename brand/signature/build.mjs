@@ -1,20 +1,21 @@
 #!/usr/bin/env node
 /**
- * Genere les signatures email a partir de templates/ + variables.json.
+ * Genere les signatures email a partir de variants.mjs + variables.json.
  *
  *   node brand/signature/build.mjs
  *   node brand/signature/build.mjs --vars brand/signature/charles.json
  *
- * Sortie : brand/signature/dist/ (une signature par variante, + un apercu
- * navigateur). Le dossier dist/ est ignore par git : chacun genere la sienne.
+ * Sortie : brand/signature/dist/ — une signature par composition, la version
+ * texte, et une page d'apercu a ouvrir dans un navigateur. dist/ est ignore
+ * par git : chacun genere la sienne avec ses coordonnees.
  */
 
-import { readFileSync, writeFileSync, mkdirSync, readdirSync } from 'node:fs';
-import { dirname, join, basename } from 'node:path';
+import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { VARIANTS, plain, normalise, esc } from './variants.mjs';
 
 const ROOT = dirname(fileURLToPath(import.meta.url));
-const TEMPLATES = join(ROOT, 'templates');
 const DIST = join(ROOT, 'dist');
 
 const varsArg = process.argv.indexOf('--vars');
@@ -23,49 +24,35 @@ const varsPath = varsArg !== -1 ? process.argv[varsArg + 1] : join(ROOT, 'variab
 const vars = JSON.parse(readFileSync(varsPath, 'utf8'));
 delete vars._commentaire;
 
-/** Echappe les caracteres qui casseraient le HTML (ex: un nom avec &). */
-const escapeHtml = (s) =>
-  String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-
-function render(template, isHtml) {
-  return template.replace(/\{\{(\w+)\}\}/g, (match, key) => {
-    if (!(key in vars)) {
-      console.warn(`  ! placeholder inconnu, laisse tel quel : ${match}`);
-      return match;
-    }
-    return isHtml ? escapeHtml(vars[key]) : String(vars[key]);
-  });
-}
-
 mkdirSync(DIST, { recursive: true });
 
-const files = readdirSync(TEMPLATES).sort();
-const built = [];
+const rendus = VARIANTS.map((v) => ({ ...v, html: v.render(normalise(vars)) }));
 
-for (const file of files) {
-  const isHtml = file.endsWith('.html');
-  const out = render(readFileSync(join(TEMPLATES, file), 'utf8'), isHtml);
-  writeFileSync(join(DIST, file), out, 'utf8');
-  built.push({ file, out, isHtml });
-  console.log(`  ok  dist/${file}`);
+for (const v of rendus) {
+  writeFileSync(join(DIST, `${v.id}.html`), v.html, 'utf8');
+  console.log(`  ok  dist/${v.id}.html`);
 }
 
-// Page d'apercu : ouvrir dans un navigateur pour verifier avant de coller.
+writeFileSync(join(DIST, 'signature.txt'), plain(vars), 'utf8');
+console.log('  ok  dist/signature.txt');
+
 const apercu = `<!doctype html>
-<html lang="fr"><head><meta charset="utf-8"><title>Apercu signatures — Finck &amp; Fisch</title></head>
-<body style="margin:0;padding:48px;background:#FAF9F7;font-family:Arial,Helvetica,sans-serif;color:#111;">
-<h1 style="font-family:Georgia,serif;font-weight:400;font-size:20px;letter-spacing:3px;text-transform:uppercase;margin:0 0 40px;">Apercu des signatures</h1>
-${built
-  .filter((b) => b.isHtml)
+<html lang="fr"><head><meta charset="utf-8"><title>Signatures — Finck &amp; Fisch</title></head>
+<body style="margin:0;padding:40px 24px;background:#F5F4F0;font-family:Arial,Helvetica,sans-serif;color:#111;">
+<div style="max-width:860px;margin:0 auto;">
+${rendus
   .map(
-    (b) => `<section style="margin:0 0 40px;">
-  <div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#A39C93;margin:0 0 14px;">${basename(b.file, '.html')}</div>
-  <div style="background:#FFFFFF;border:1px solid #EAE6E1;padding:28px;">${b.out}</div>
+    (v) => `<section style="margin:0 0 34px;">
+  <div style="display:flex;gap:14px;align-items:baseline;font-size:10px;letter-spacing:1.8px;text-transform:uppercase;color:#A39C93;margin:0 0 10px;">
+    <span style="color:#111;font-weight:bold;">${esc(v.nom)}</span><span>${esc(v.note)}</span>
+  </div>
+  <div style="background:#FFFFFF;border:1px solid #E3DED6;padding:30px;">${v.html}</div>
 </section>`
   )
   .join('\n')}
+</div>
 </body></html>`;
 
 writeFileSync(join(DIST, 'apercu.html'), apercu, 'utf8');
-console.log(`  ok  dist/apercu.html`);
-console.log(`\nTermine. Ouvre brand/signature/dist/apercu.html pour verifier, puis copie-colle.`);
+console.log('  ok  dist/apercu.html');
+console.log('\nTermine. Ouvre brand/signature/dist/apercu.html, puis copie le rendu.');
